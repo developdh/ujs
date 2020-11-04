@@ -1,10 +1,11 @@
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as createHttpError from 'http-errors';
+import createHttpError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
 import { io } from '../server';
-import { NotExtended } from 'http-errors';
+import { request } from 'http';
+import { create } from 'ts-node';
 
 interface jwtType{
     origin: string;
@@ -14,32 +15,38 @@ interface jwtType{
 
 const router = express.Router();
 
+let save: any = {print: console.log};
+
 router.get('/', (req, res) => {
-    evalSafe('print("a");', { print: console.log });
+    evalSafe('save.a = 1;', {save:save})
+    evalSafe('save.print(save.a);', {save:save})
     console.log(req.headers.origin);
     res.send({ ok: 1 });
-
 });
 
-router.post('/auth', async (req, res, next) => {
+router.post('/auth', (req, res, next) => {
+    if(req.headers.origin === undefined)
+        return next(createHttpError(500));
+    
     let info = {origin: req.headers.origin,}
     try {
-        let data = await jwt.sign(info, 'ggurikitakati');
-        res.send(data);
+        let data = jwt.sign(info, 'ggurikitakati');
+        console.log(typeof req.headers.origin);
+        res.send([data, req.headers.origin]);
     } catch (err) {
         next(err);
     }
 })
 
-router.get('/auth', async (req, res, next) => {
+router.get('/auth', (req, res, next) => {
     const body = req.body;
     try{
-        const data = await jwt.verify(req.headers.authorization.split('jwt ')[1], 'ggurikitakati') as jwtType;
+        const data = jwt.verify(req.headers.authorization.split('jwt ')[1], 'ggurikitakati') as jwtType;
         const jwtInfo = {
             origin: data.origin,
         }
-        const renew = await jwt.sign(jwtInfo, 'ggurikitakati', { expiresIn: 60 * 60 });
-        res.send(renew);
+        const renew = jwt.sign(jwtInfo, 'ggurikitakati', { expiresIn: 60 * 60 });
+        res.send(data);
     }catch(err){
         next(err);
     }

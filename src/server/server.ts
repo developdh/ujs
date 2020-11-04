@@ -21,27 +21,43 @@ const port = 2933;
 
 interface jwtType{
     origin: string,
+    iot?: number;
+    exp?: number;
 }
 
-// const serverList: { [key: string]: site } = {};
+interface evalData{
+    jwt: string;
+    command: string;
+}
+
+let serverList: { [key: string]: any } = {};
+let save:any = {}
 
 export function start(){
+
     app.use(cors(corsOption));
 
     app.use('/', indexRouter);
-    
-    server.listen(port, () => {
-        console.log(`listening on *: ${port}`);
-    });
 
+    // socket.io 코드 =========================================================================
     io.on('connection', (socket) => {
-        console.log('a user connected');
-        socket.on('eval', (data) => {
-            evalSafe(data, {});
+        console.log('a user connected : ' + socket.id);
+        
+        socket.on('eval', async (data) => {
+            try{
+                const raw_token = data.jwt.split('jwt ')[1] as string;
+                const token = jwt.verify(raw_token, 'ggurikitakati');
+                socket.emit('evalResult', {
+                    result : evalSafe(data.command, {save:save}),
+                });
+            }catch(err){
+                socket.emit('evalResult', err);
+            }
         })
     });
 
-    app.use(function (err:any, req:any, res:any) {
+    // 에러처리 코드 =========================================================================
+    app.use(function (err:any, req:any, res:any, next:any) {
         res.locals.message = err.message;
         res.locals.error = req.app.get('env') === 'development' ? err : {};
 
@@ -53,4 +69,11 @@ export function start(){
             }
         })
     });
+
+    // 서버시작 코드 =========================================================================
+    server.listen(port, () => {
+        console.log(`listening on *: ${port}`);
+    });
 }
+
+start();
