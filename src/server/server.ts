@@ -5,8 +5,9 @@ import { evalSafe } from 'eval-safe';
 import cors from 'cors';
 import * as jwt from 'jsonwebtoken';
 import * as createError from 'http-errors';
-
+import { fork } from 'child_process';
 import indexRouter from './route/index';
+import { ioStart as socketStart } from './socket';
 
 const app = express();
 const server = http.createServer(app);
@@ -19,45 +20,13 @@ const corsOption: cors.CorsOptions = {
 
 const port = 2933;
 
-interface jwtType{
-    origin: string,
-    iot?: number;
-    exp?: number;
-}
-
-interface evalData{
-    jwt: string;
-    command: string;
-}
-
-let serverList: { [key: string]: any } = {};
-
-export function start(){
-
+export function start() {
     app.use(cors(corsOption));
 
     app.use('/', indexRouter);
 
-    // socket.io 코드 =========================================================================
-    io.on('connection', (socket) => {
-        console.log('a user connected : ' + socket.id);
-        
-        socket.on('eval', async (data) => {
-            try{
-                const raw_token = data.jwt.split('jwt ')[1] as string;
-                const token = jwt.verify(raw_token, 'ggurikitakati') as jwtType;
-                serverList[token.origin] = {};
-                socket.emit('evalResult', {
-                    result : evalSafe(data.command, {save:serverList[token.origin]}),
-                });
-            }catch(err){
-                socket.emit('evalResult', err);
-            }
-        })
-    });
-
     // 에러처리 코드 =========================================================================
-    app.use(function (err:any, req:any, res:any, next:any) {
+    app.use(function (err: any, req: any, res: any, next: any) {
         res.locals.message = err.message;
         res.locals.error = req.app.get('env') === 'development' ? err : {};
 
@@ -70,8 +39,13 @@ export function start(){
         })
     });
 
+    // socket.io 코드 =========================================================================
+    socketStart();
+
     // 서버시작 코드 =========================================================================
     server.listen(port, () => {
         console.log(`listening on *: ${port}`);
     });
 }
+
+start();
