@@ -12,6 +12,7 @@ const Menu = () => {
             <ul>
                 <li><NavLink exact to="/" activeStyle={activeStyle}>Main</NavLink></li>
                 <li><NavLink to="/setting" activeStyle={activeStyle}>setting</NavLink></li>
+                <li><NavLink to="/info" activeStyle={activeStyle}>info</NavLink></li>
             </ul>
             <hr/>
         </div>
