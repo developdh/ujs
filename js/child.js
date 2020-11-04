@@ -32,6 +32,9 @@ process.on("message", message => {
             ...save,
             console
         });
+        process.send({
+            type: 'spawn_close'
+        })
     } else if (message.type === "message") {
         messageReceived(message.data);
     }
