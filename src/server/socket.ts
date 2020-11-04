@@ -63,11 +63,9 @@ export function ioStart() {
 
                 // 프로세스와 소통 설정
                 server.process.on("message", (message: any) => {
-                    if (message.type === 'result') {
-                        socket.emit('spawn_message', {
-                            message: message.result,
-                        });
-                    }
+                    socket.emit('spawn_message', {
+                        message: message.result,
+                    });
                 });
 
                 // 프로세스 종료시

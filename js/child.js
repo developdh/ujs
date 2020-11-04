@@ -25,14 +25,13 @@ function messageReceived(message) {
 
 process.on("message", message => {
     if (message.type === "exec") {
-        let result = evalSafe(message.command, {
+        evalSafe(message.command, {
             onMessage,
             offMessage,
             sendMessage,
             ...save,
             console
         });
-        process.send({ type: 'result', result });
     } else if (message.type === "message") {
         messageReceived(message.data);
     }
