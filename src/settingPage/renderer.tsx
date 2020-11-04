@@ -1,7 +1,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./Components/App";
+import App from "./Components/App/App";
 
 /**
  * This file will automatically be loaded by webpack and run in the "renderer" context.
