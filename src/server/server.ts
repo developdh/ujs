@@ -31,7 +31,6 @@ interface evalData{
 }
 
 let serverList: { [key: string]: any } = {};
-let save:any = {}
 
 export function start(){
 
@@ -46,9 +45,10 @@ export function start(){
         socket.on('eval', async (data) => {
             try{
                 const raw_token = data.jwt.split('jwt ')[1] as string;
-                const token = jwt.verify(raw_token, 'ggurikitakati');
+                const token = jwt.verify(raw_token, 'ggurikitakati') as jwtType;
+                serverList[token.origin] = {};
                 socket.emit('evalResult', {
-                    result : evalSafe(data.command, {save:save}),
+                    result : evalSafe(data.command, {save:serverList[token.origin]}),
                 });
             }catch(err){
                 socket.emit('evalResult', err);
@@ -75,5 +75,3 @@ export function start(){
         console.log(`listening on *: ${port}`);
     });
 }
-
-start();

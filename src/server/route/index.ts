@@ -17,9 +17,10 @@ const router = express.Router();
 
 let save: any = {print: console.log};
 
+// test code
 router.get('/', (req, res) => {
-    evalSafe('save.a = 1;', {save:save})
-    evalSafe('save.print(save.a);', {save:save})
+    evalSafe('save.a = 1;', {$:save})
+    evalSafe('save.print(save.a);', {$:save})
     console.log(req.headers.origin);
     res.send({ ok: 1 });
 });
@@ -32,7 +33,7 @@ router.post('/auth', (req, res, next) => {
     try {
         let data = jwt.sign(info, 'ggurikitakati');
         console.log(typeof req.headers.origin);
-        res.send([data, req.headers.origin]);
+        res.send(data);
     } catch (err) {
         next(err);
     }
