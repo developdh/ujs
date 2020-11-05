@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import InfoInfo from './InfoInfo';
 import InfoApp from './InfoApp'
 import { withRouter } from 'react-router';
-import url_data from '../../../../server/data.json';
+import jsondata from '../../../../server/data.json';
 
 
 class InfoList extends Component {
@@ -30,7 +30,9 @@ class InfoList extends Component {
       <div>
         {list}
 
-        <button style={buttonStyle} onClick={() => alert()}>저장</button>
+        <button style={buttonStyle} onClick={() => {
+          
+        }}>저장</button>
 
 
       </div>
