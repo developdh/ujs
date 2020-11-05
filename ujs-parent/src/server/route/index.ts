@@ -2,8 +2,7 @@ import * as express from 'express';
 import createHttpError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
-import { request } from 'http';
-import { create } from 'ts-node';
+import setting from '../data.json';
 
 interface jwtType {
     origin: string;
@@ -23,31 +22,29 @@ router.get('/', (req, res) => {
     res.send({ ok: 1 });
 });
 
+// json 생성
 router.post('/auth', (req, res, next) => {
+    // 헤더에 오리진 없을시 내보냄.
     if (req.headers.origin === undefined)
         return next(createHttpError(500));
-
+    // json 생성.
     let info = { origin: req.headers.origin, }
     try {
         let data = jwt.sign(info, 'ggurikitakati');
-        console.log(typeof req.headers.origin);
         res.send(data);
     } catch (err) {
         next(err);
     }
 })
 
+// json 유효검사
 router.get('/auth', (req, res, next) => {
     const body = req.body;
     try {
-        const data = jwt.verify(req.headers.authorization.split('jwt ')[1], 'ggurikitakati') as jwtType;
-        const jwtInfo = {
-            origin: data.origin,
-        }
-        const renew = jwt.sign(jwtInfo, 'ggurikitakati');
-        res.send(data);
+        jwt.verify(req.headers.authorization.split('jwt ')[1], 'ggurikitakati');
+        res.send(true);
     } catch (err) {
-        next(err);
+        res.send(false);
     }
 })
 

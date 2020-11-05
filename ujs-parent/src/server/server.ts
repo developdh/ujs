@@ -1,11 +1,7 @@
 import express from "express";
 import http from "http";
 import socketIo from "socket.io";
-import { evalSafe } from 'eval-safe';
 import cors from 'cors';
-import * as jwt from 'jsonwebtoken';
-import * as createError from 'http-errors';
-import { fork } from 'child_process';
 import indexRouter from './route/index';
 import { ioStart as socketStart } from './socket';
 
@@ -48,3 +44,4 @@ export function start() {
     });
 }
 
+// start();

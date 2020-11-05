@@ -2,6 +2,7 @@ import { io } from './server';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
 import { fork, ChildProcess } from 'child_process';
+import setting from './data.json';
 
 interface JwtType {
     origin: string,
@@ -49,10 +50,11 @@ export function ioStart() {
                 //jwt 파싱
                 const raw_token = data.jwt.split('jwt ')[1] as string;
                 const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
-
+                console.log(__dirname);
                 // 서버 설정
                 const server: Server = {
-                    process: fork('js/child')
+                    // process: fork('../ujs-child/js/child'),     // nodemon 코드
+                    process: fork('../ujs-child/js/child'),     // electron 코드
                 };
 
                 serverList[token.origin] = server;  // 서버 객체에 저장
@@ -74,10 +76,9 @@ export function ioStart() {
 
                 // 프로세스 종료시
                 server.process.on("exit", (message: any) => {
-                    if (data.alive === false) {
-                        if (server.timeoutId)
-                            clearTimeout(server.timeoutId);
-                    }
+                    if (server.timeoutId)
+                        clearTimeout(server.timeoutId);
+                    
                     // 종료 id 보냄
                     socket.emit('spawn_close', {
                         status: server.process.exitCode,
@@ -94,12 +95,15 @@ export function ioStart() {
             // 객체 찾기
             const origin = socketList[socket.id];
             const server = serverList[origin];
+            // 요류 방지
+            if(origin === undefined || server === undefined)
+                return;
             // 프로세스 죽이기
-            server.process.kill(1);
+            if(server.process.exitCode === null)
+                server.process.kill(1);
             // 타임아웃 클리어
-            if (server.timeoutId !== undefined) {
+            if (server.timeoutId !== undefined)
                 clearTimeout(server.timeoutId);
-            }
             // 객체 삭제
             delete socketList[socket.id];
             delete serverList[origin];
