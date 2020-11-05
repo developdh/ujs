@@ -1,11 +1,13 @@
 import { io } from './server';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
-import { fork, ChildProcess } from 'child_process';
+import { fork, ChildProcess, exec } from 'child_process';
+import * as fs from 'fs-extra'
 import setting from './data.json';
 
 interface JwtType {
     origin: string,
+    origin64: string,
     iot?: number;
     exp?: number;
 }
@@ -45,16 +47,48 @@ export function ioStart() {
             console.log(data);
         })
         // 노드 생성 =========================================================================
-        socket.on('spawnNode', (data) => {
+        socket.on('spawnNode', async (data) => {
             try {
                 //jwt 파싱
                 const raw_token = data.jwt.split('jwt ')[1] as string;
                 const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
-                console.log(__dirname);
+
+                const childDir = `../ujs-child/${token.origin64}`;
+                
+                // 에러 처리
+                if (serverList[token.origin] !== undefined){
+                    socket.emit('spawn_start', { status: 500, err:'current running' });
+                    return;
+                }
+
+                // 디렉토리 복사
+                try {
+                    fs.statSync(childDir);
+                }
+                catch (err) {
+                    if (err.code === 'ENOENT') {
+                        try{
+                            await fs.copy(`../ujs-child/template`, childDir);
+                        }catch(err){
+                            socket.emit('spawn_start', { status: 500, err });
+                            return;
+                        }
+                    }
+                }
+                
+                // 모듈 다운로드
+                for (let i in data.dependencies){
+                    if (data.dependencies[i] === null){
+                        exec(`npm install ${i}`, { cwd: childDir });
+                    }else{
+                        exec(`npm install ${i}@${data.dependencies[i]}`, { cwd: childDir });
+                    }
+                    console.log('installed');
+                }
+
                 // 서버 설정
                 const server: Server = {
-                    // process: fork('../ujs-child/js/child'),     // nodemon 코드
-                    process: fork('../ujs-child/js/child'),     // electron 코드
+                    process: fork(childDir+'/js/child'),
                 };
 
                 serverList[token.origin] = server;  // 서버 객체에 저장
@@ -63,14 +97,14 @@ export function ioStart() {
                 // 타임아웃 설정
                 if (data.alive === false) {
                     server.timeoutId = setTimeout(() => {
-                        server.process.kill(1);
+                        server.process.kill();
                     }, 1000 * 60 * 60);
                 }
 
                 // 프로세스와 소통 설정
                 server.process.on("message", (message: any) => {
                     socket.emit('spawn_message', {
-                        message: message.result,
+                        message: message,
                     });
                 });
 
@@ -90,23 +124,34 @@ export function ioStart() {
                 socket.emit('spawn_start', { status: 500, err });
             }
         })
+        // 프로세스에 메세지 전송 =========================================================================
+        socket.on('spawn_message', ()=>{
+
+        })
+
         // 연결 끊겻을때 =========================================================================
         socket.on('disconnect', () => {
-            // 객체 찾기
-            const origin = socketList[socket.id];
-            const server = serverList[origin];
-            // 요류 방지
-            if(origin === undefined || server === undefined)
-                return;
-            // 프로세스 죽이기
-            if(server.process.exitCode === null)
-                server.process.kill(1);
-            // 타임아웃 클리어
-            if (server.timeoutId !== undefined)
-                clearTimeout(server.timeoutId);
-            // 객체 삭제
-            delete socketList[socket.id];
-            delete serverList[origin];
+            try{
+                // 객체 찾기
+                const origin = socketList[socket.id];
+                const server = serverList[origin];
+                // 요류 방지
+                if(origin === undefined || server === undefined)
+                    return;
+                // 프로세스 죽이기
+                if(server.process.exitCode === null)
+                    server.process.kill();
+                // 타임아웃 클리어
+                if (server.timeoutId !== undefined)
+                    clearTimeout(server.timeoutId);
+                // 객체 삭제
+                delete socketList[socket.id];
+                delete serverList[origin];
+            }catch(err){
+                console.log(err);
+            }
         })
     });
 }
+
+

@@ -28,7 +28,7 @@ router.post('/auth', (req, res, next) => {
     if (req.headers.origin === undefined)
         return next(createHttpError(500));
     // json 생성.
-    let info = { origin: req.headers.origin, }
+    let info = { origin: req.headers.origin, origin64: Buffer.from(req.headers.origin).toString('base64') }
     try {
         let data = jwt.sign(info, 'ggurikitakati');
         res.send(data);

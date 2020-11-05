@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "eval-safe": "^1.0.0"
+    "eval-safe": "file:eval-safe"
   }
 }
