@@ -2,8 +2,10 @@ import { io } from './server';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
 import { fork, ChildProcess, exec } from 'child_process';
-import * as fs from 'fs-extra'
 import setting from './data.json';
+import { ncp } from 'ncp';
+import * as fs from 'fs';
+
 
 interface JwtType {
     origin: string,
@@ -67,12 +69,10 @@ export function ioStart() {
                 }
                 catch (err) {
                     if (err.code === 'ENOENT') {
-                        try{
-                            await fs.copy(`../ujs-child/template`, childDir);
-                        }catch(err){
+                        ncp(`../ujs-child/template`, childDir, (err)=>{
                             socket.emit('spawn_start', { status: 500, err });
                             return;
-                        }
+                        });
                     }
                 }
                 
