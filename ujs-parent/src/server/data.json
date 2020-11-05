@@ -1,0 +1,14 @@
+{
+    "information" : [
+        {
+            "id": 0,
+            "name": "Naver",
+            "url": "https://naver.com"
+        },
+        {
+            "id": 1,
+            "name": "Google",
+            "url": "https://google.com"
+        }
+    ]
+}

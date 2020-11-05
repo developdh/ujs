@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import InfoForm from './InfoForm';
 import InfoList from './InfoList';
+import information from '../../../../server/data.json';
 
 class InfoApp extends Component {
   id = 2
@@ -31,6 +32,7 @@ class InfoApp extends Component {
       information: information.filter(info => info.id !== id)
     })
   }
+  
   render() {
     const { information } = this.state;
     return (

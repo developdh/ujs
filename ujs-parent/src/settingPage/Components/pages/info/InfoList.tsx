@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import InfoInfo from './InfoInfo';
+import InfoApp from './InfoApp'
+import { withRouter } from 'react-router';
+import information from '../../../../server/data.json';
+
 
 class InfoList extends Component {
   static defaultProps = {
@@ -17,10 +21,18 @@ class InfoList extends Component {
           onRemove={onRemove}
         />)
     );
+    const buttonStyle = {
+      width: "40px",
+      hight: "30px",
+    }
 
     return (
       <div>
-        {list}    
+        {list}
+
+        <button style={buttonStyle} onClick={() => alert()}>저장</button>
+
+
       </div>
     );
   }
