@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import InfoForm from './InfoForm';
 import InfoList from './InfoList';
-import information from '../../../../server/data.json';
+import url_data from '../../../../server/data.json';
 
 class InfoApp extends Component {
   id = 2

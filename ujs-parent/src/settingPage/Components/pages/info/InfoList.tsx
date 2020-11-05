@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import InfoInfo from './InfoInfo';
 import InfoApp from './InfoApp'
 import { withRouter } from 'react-router';
-import information from '../../../../server/data.json';
+import url_data from '../../../../server/data.json';
 
 
 class InfoList extends Component {
