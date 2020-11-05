@@ -1,5 +1,5 @@
 {
-  "name": "ujs-child",
+  "name": "template",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "eval-safe": "file:eval-safe"
+    "eval-safe": "^1.0.0"
   }
 }
