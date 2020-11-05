@@ -29,12 +29,6 @@ class InfoList extends Component {
     return (
       <div>
         {list}
-
-        <button style={buttonStyle} onClick={() => {
-          
-        }}>저장</button>
-
-
       </div>
     );
   }
