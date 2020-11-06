@@ -99,6 +99,7 @@
     "axios": "^0.21.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "csstype": "^3.0.4",
     "debug": "^4.2.0",
     "edit-json-file": "^1.5.0",
     "electron-fs-extra": "^1.0.0",
