@@ -3,7 +3,7 @@ import React from 'react';
 const MainPage = () => {
     return (
         <div>
-            main page
+            Welcome to UJS!
         </div>
     );
 };

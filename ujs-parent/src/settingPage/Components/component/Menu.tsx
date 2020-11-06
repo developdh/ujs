@@ -30,7 +30,7 @@ const Menu = () => {
             <ul style={ul}>
                 <li><span id="logo">UJS</span></li>
                 <li style={li}><NavLink exact to="/" activeStyle={activeStyle} style={link}>Main</NavLink></li>
-                <li style={li}><NavLink to="/setting" activeStyle={activeStyle} style={link}>setting</NavLink></li>
+                {/* <li style={li}><NavLink to="/setting" activeStyle={activeStyle} style={link}>setting</NavLink></li> */}
                 <li style={li}><NavLink to="/info" activeStyle={activeStyle} style={link}>info</NavLink></li>
             </ul>
             <hr/>
