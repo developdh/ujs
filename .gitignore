@@ -87,3 +87,7 @@ typings/
 
 # Electron-Forge
 out/
+
+# white list
+
+!/ujs-child/template/**

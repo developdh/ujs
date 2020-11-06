@@ -4,6 +4,7 @@ import socketIo from "socket.io";
 import cors from 'cors';
 import indexRouter from './route/index';
 import { ioStart as socketStart } from './socket';
+import bodyParser from 'body-parser';
 
 const app = express();
 const server = http.createServer(app);
@@ -18,7 +19,8 @@ const port = 2933;
 
 export function start() {
     app.use(cors(corsOption));
-
+    app.use(bodyParser.json());
+    app.use(express.urlencoded({ extended: true }));
     app.use('/', indexRouter);
 
     // 에러처리 코드 =========================================================================

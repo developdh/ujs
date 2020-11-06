@@ -3,6 +3,7 @@ import createHttpError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
 import setting from '../data.json';
+import * as fs from 'fs';
 
 interface jwtType {
     origin: string;
@@ -48,6 +49,20 @@ router.get('/auth', (req, res, next) => {
     }
 })
 
+router.get('/setting', (req, res, next) => {
+    fs.readFile('./src/server/data.json', (err, data) => {
+        if (err) res.send(err);
+        else res.send(data);
+    })
+})
+
+router.post('/setting', async (req, res, next) => {
+    const setting = String(req.body.setting);
+    fs.writeFile('./src/server/data.json', setting, 'utf-8', (err) => {
+        if (err) res.send(err);
+        else res.send(setting);
+    });
+})
 
 
 export default router;
