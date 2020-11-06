@@ -21,10 +21,6 @@ class InfoList extends Component {
           onRemove={onRemove}
         />)
     );
-    const buttonStyle = {
-      width: "40px",
-      hight: "30px",
-    }
 
     return (
       <div>

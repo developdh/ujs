@@ -35,6 +35,11 @@ class InfoApp extends Component {
   
   render() {
     const { information } = this.state;
+    const buttonStyle = {
+      width: "40px",
+      hight: "30px",
+    }
+    const axios = require('axios');
     return (
       <div>
         <InfoForm
@@ -44,6 +49,9 @@ class InfoApp extends Component {
           data={information}
           onRemove={this.handleRemove}
         />
+        <button style={buttonStyle} onClick={() => {
+          axios.post('localhost:2933', JSON.stringify(information))
+        }}
       </div>
     );
   }
