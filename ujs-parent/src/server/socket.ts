@@ -2,13 +2,13 @@ import { io } from './server';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
 import { fork, ChildProcess, exec as normalExec } from 'child_process';
-import setting from './data.json';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
+const readFile = util.promisify(fs.readFile);
 
 interface JwtType {
     origin: string,
@@ -71,12 +71,7 @@ export function ioStart() {
                     fs.statSync(childDir);
                 } catch (err) {
                     if (err.code === 'ENOENT') {
-                        try {
-                            await ncp(`../ujs-child/template`, childDir);
-                        } catch (err) {
-                            socket.emit('spawn_start', { status: 500, err });
-                            return;
-                        }
+                        await ncp(`../ujs-child/template`, childDir);
                     }
                 }
 
