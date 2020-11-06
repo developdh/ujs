@@ -51,7 +51,7 @@ class InfoApp extends Component {
           onRemove={this.handleRemove}
         />
         <button style={buttonStyle} onClick={() => {
-          axios.post('localhost:2933', JSON.stringify(information))
+          axios.post('https://localhost:2933', JSON.stringify(information))
         }}>저장</button>
       </div>
     );
