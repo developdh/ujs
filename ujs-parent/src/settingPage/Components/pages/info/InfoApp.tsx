@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import InfoForm from './InfoForm';
 import InfoList from './InfoList';
 import jsondata from '../../../../server/data.json';
+import axios from 'axios';
 
 class InfoApp extends Component {
   id = 2
@@ -32,9 +33,10 @@ class InfoApp extends Component {
       information: information.filter(info => info.id !== id)
     })
   }
-  
+  componentDidMount(){
+    axios.get('http://localhost:2933/setting').then(res => {this.setState({information: res.data})});
+  }
   render() {
-    const axios = require('axios');
     const { information } = this.state;
     
     const buttonStyle = {
@@ -51,7 +53,7 @@ class InfoApp extends Component {
           onRemove={this.handleRemove}
         />
         <button style={buttonStyle} onClick={() => {
-          axios.post('https://localhost:2933/setting', {setting: JSON.stringify(information)});
+          axios.post('http://localhost:2933/setting', {setting: JSON.stringify(information)});
         }}>저장</button>
       </div>
     );
