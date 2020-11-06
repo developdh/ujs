@@ -88,6 +88,8 @@ typings/
 # Electron-Forge
 out/
 
-# white list
+# ban ujs-child
+/ujs-child/**
 
+# white list
 !/ujs-child/template/**
