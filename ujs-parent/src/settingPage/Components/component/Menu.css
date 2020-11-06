@@ -1,5 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
 #logo{
-    font-family: Oswald;
+    font-family: Poppins;
+    font-weight: 900;
     font-size: 150%;
+}
+a{
+    font-family: Poppins;
+    font-weight: 300;
 }
