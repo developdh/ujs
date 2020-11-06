@@ -12,8 +12,6 @@ class App extends Component {
             <div>
                 <HashRouter>
                     <Route path="/" component={Menu}/>
-                </HashRouter>
-                <HashRouter>
                     <Route exact path="/" component={MainPage}/>
                     <Route path="/setting" component={SettingPage}/>
                     <Route path="/info" component={InfoApp}/>
