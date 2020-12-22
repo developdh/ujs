@@ -1,6 +1,8 @@
 import React from 'react';
+import {Properties as css} from 'csstype';
 
-const MainPage = () => {
+
+const DashboardPage = () => {
     return (
         <div>
             Welcome to UJS!
@@ -8,4 +10,4 @@ const MainPage = () => {
     );
 };
 
-export default MainPage;
+export default DashboardPage;

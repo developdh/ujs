@@ -4,34 +4,45 @@ import {Properties as css} from 'csstype';
 import './Menu.css';
 
 const Menu = () => {
-    const activeStyle = {
+    const activeStyle: css = {
         color: '#49c0ec',
+        fontSize: '20px'
+    };
+
+    const nav: css = {
+        backgroundColor: '#181F29',
     };
 
     const ul: css = {
         listStyle: 'none',
         paddingLeft: '16px',
         display: 'flex',
-        alignItems: "center",
-    }
+        alignItems: 'center',
+        margin: '0px',
+    };
 
     const li: css = {
         paddingLeft: '10px',
-        paddingRight: '10px',
-        borderRight: '1px solid gray',
-    }
+        color: '#49c0ec',
+        fontSize: '15px'
+    };
 
     const link: css = {
         textDecoration: 'none',
-    }
+    };
+
+    const logo: css = {
+        color: '#705DED',
+        fontSize: '30px',
+    };
 
     return (
-        <nav>
+        <nav style={nav}>
             <ul style={ul}>
-                <li><span id="logo">UJS</span></li>
+                <li><span id="logo" style={logo}>UJS</span></li>
                 <li style={li}><NavLink exact to="/" activeStyle={activeStyle} style={link}>Main</NavLink></li>
-                {/* <li style={li}><NavLink to="/setting" activeStyle={activeStyle} style={link}>setting</NavLink></li> */}
-                <li style={li}><NavLink to="/info" activeStyle={activeStyle} style={link}>info</NavLink></li>
+                <li style={li}><NavLink to="/setting" activeStyle={activeStyle} style={link}>setting</NavLink></li>
+                <li style={li}><NavLink to="/about" activeStyle={activeStyle} style={link}>about</NavLink></li>
             </ul>
             <hr/>
         </nav>

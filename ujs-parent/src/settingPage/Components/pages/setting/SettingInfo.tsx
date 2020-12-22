@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 
-class InfoInfo extends Component {
-  static defaultProps = {
-    info: {
-      name: '이름',
-      phone: '010-0000-0000',
-      id: 0
-    },
-  }
+class SettingInfo extends Component {
   props: any;
   handleRemove = () => {
     const { info, onRemove } = this.props;
@@ -35,4 +28,4 @@ class InfoInfo extends Component {
   }
 }
 
-export default InfoInfo;
+export default SettingInfo;

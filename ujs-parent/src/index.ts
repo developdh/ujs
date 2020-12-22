@@ -12,6 +12,10 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    backgroundColor: '#181F29',
+    webPreferences: {
+      nodeIntegration: true
+    },
   });
 
   // and load the index.html of the app.

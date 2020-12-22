@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import InfoInfo from './InfoInfo';
-import InfoApp from './InfoApp'
-import { withRouter } from 'react-router';
-import jsondata from '../../../../server/data.json';
+import SettingInfo from './SettingInfo';
 
-
-class InfoList extends Component {
+class SettingList extends Component {
   static defaultProps = {
     list: [],
     onRemove: () => console.warn('onRemove not defined'),
@@ -15,7 +11,7 @@ class InfoList extends Component {
     const { data, onRemove } = this.props;
     const list = data.map(
       info => (
-        <InfoInfo
+        <SettingInfo
           key={info.id}
           info={info}
           onRemove={onRemove}
@@ -30,4 +26,4 @@ class InfoList extends Component {
   }
 }
 
-export default InfoList;
+export default SettingList;

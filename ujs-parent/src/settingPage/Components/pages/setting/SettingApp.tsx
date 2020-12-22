@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
-import InfoForm from './InfoForm';
-import InfoList from './InfoList';
-import jsondata from '../../../../server/data.json';
+import SettingForm from './SettingForm';
+import SettingList from './SettingList';
 import axios from 'axios';
 
-class InfoApp extends Component {
-  id = 2
+class SettingApp extends Component {
+  id = 0
   state = {
     information: [
       {
         id: 0,
-        name: 'Naver',
-        url: 'https://naver.com'
-      },
-      {
-        id: 1,
-        name: 'Google',
-        url: 'https://google.com'
+        name: '',
+        url: ''
       }
     ]
   }
@@ -45,10 +39,10 @@ class InfoApp extends Component {
     }
     return (
       <div>
-        <InfoForm
+        <SettingForm
           onCreate={this.handleCreate}
         />
-        <InfoList
+        <SettingList
           data={information}
           onRemove={this.handleRemove}
         />
@@ -60,4 +54,4 @@ class InfoApp extends Component {
   }
 }
 
-export default InfoApp;
+export default SettingApp;

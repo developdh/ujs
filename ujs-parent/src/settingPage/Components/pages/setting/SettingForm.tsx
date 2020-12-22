@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import sanitizeHtml from 'sanitize-html';
 
-class InfoForm extends Component {
+class SettingForm extends Component {
   state = {
     name: '',
     url: ''
@@ -21,17 +22,31 @@ class InfoForm extends Component {
     })
   }
   render() {
+    const defaultOptions = {
+      allowedTags: [ 'b', 'i', 'em', 'strong', 'a' ],
+      allowedAttributes: {
+        'a': [ 'href' ]
+      },
+    };
+    
+    const sanitize = (dirty, options) => ({
+      __html: sanitizeHtml(
+        dirty, 
+        { ...defaultOptions, ...options }
+      )
+    });
+    
     return (
       <form onSubmit={this.handleSubmit}>
         <input
           placeholder="이름"
-          value={this.state.name}
+          value={sanitizeHtml(this.state.name)}
           onChange={this.handleChange}
           name="name"
         />
         <input
           placeholder="URL"
-          value={this.state.url}
+          value={sanitizeHtml(this.state.url)}
           onChange={this.handleChange}
           name="url"
         />
@@ -41,4 +56,4 @@ class InfoForm extends Component {
   }
 }
 
-export default InfoForm;
+export default SettingForm;

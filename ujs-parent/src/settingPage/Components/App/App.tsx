@@ -1,24 +1,27 @@
 import React, { Component } from 'react';
 import { Route, HashRouter } from 'react-router-dom';
-import MainPage from '../pages/MainPage';
-import SettingPage from '../pages/SettingPage';
+import DashboardPage from '../pages/DashboardPage';
+import About from '../pages/About'
 import Menu from '../component/Menu';
-import InfoApp from '../pages/info/InfoApp';
+import SettingApp from '../pages/setting/SettingApp';
+import {Properties as css} from 'csstype';
 
 
-class App extends Component {
-    render() {
-        return (
-            <div>
-                <HashRouter>
-                    <Route path="/" component={Menu}/>
-                    <Route exact path="/" component={MainPage}/>
-                    <Route path="/setting" component={SettingPage}/>
-                    <Route path="/info" component={InfoApp}/>
-                </HashRouter>
-            </div>
-        );
+const App = () => {
+    const cssColor: css = {
+        color: "white"
     }
+
+    return (
+        <body style={cssColor}>
+            <HashRouter>
+                <Route path="/" component={Menu}/>
+                <Route exact path="/" component={DashboardPage}/>
+                <Route exact path="/setting" component={SettingApp}/>
+                <Route exact path="/about" component={About}/>
+            </HashRouter>
+        </body>
+    );
 }
 
 export default App;
