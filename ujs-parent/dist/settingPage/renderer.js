@@ -1,10 +1,11 @@
-
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./Components/App/App";
-
-import { spawn } from 'child_process';
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+exports.__esModule = true;
+var react_1 = __importDefault(require("react"));
+var react_dom_1 = __importDefault(require("react-dom"));
+var App_1 = __importDefault(require("./Components/App/App"));
 /**
  * This file will automatically be loaded by webpack and run in the "renderer" context.
  * To learn more about the differences between the "main" and the "renderer" context in
@@ -32,17 +33,7 @@ import { spawn } from 'child_process';
  *  });
  * ```
  */
-
-import './index.css';
-
-const main = document.getElementById("main");
-
-ReactDOM.render(<App/>, main);
-
-const node = spawn(
-    ".\\node_modules\\node\\bin\\node.exe",
-    ["./dist/server/server"],
-    {
-      cwd: process.cwd()
-    }
-);
+require("./index.css");
+var main = document.getElementById("main");
+react_dom_1["default"].render(react_1["default"].createElement(App_1["default"], null), main);
+//# sourceMappingURL=renderer.js.map
