@@ -19,13 +19,13 @@ class SettingApp extends Component {
     const { information } = this.state;
     this.setState({
       information: information.concat({ id: this.id++, ...data })
-    })
+    });
   }
   handleRemove = (id) => {
     const { information } = this.state;
     this.setState({
       information: information.filter(info => info.id !== id)
-    })
+    });
   }
   componentDidMount(){
     axios.get('http://localhost:2933/setting').then(res => {this.setState({information: res.data})});
