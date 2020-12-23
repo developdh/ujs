@@ -92,4 +92,4 @@ out/
 /ujs-child/**
 
 # white list
-!/ujs-child/template/**
+!/ujs-parent/datas/ujs-child/template/**

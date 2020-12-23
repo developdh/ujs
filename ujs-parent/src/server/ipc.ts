@@ -16,34 +16,34 @@ export function ipcStart(){
     
     // 설정 받기
     ipcMain.on('get-setting', (event, arg) => {
-        fs.readFile('./src/server/setting.json', (err, data) => {
-            if (err) event.reply('get-setting', err);
-            else event.reply('get-setting', data);
+        fs.readFile('./datas/src/server/data.json', (err, data) => {
+            if (err) event.reply('error', err);
+            else event.reply('get-setting', JSON.parse(String(data)));
         })
     })
 
     // 설정 바꿈
     ipcMain.on('set-setting', (event, arg) => {
         const setting = arg as string;
-        fs.writeFile('./src/server/setting.json', setting, 'utf-8', (err) => {
-            if (err) event.reply('set-setting', err);
+        fs.writeFile('./datas/src/server/data.json', setting, 'utf-8', (err) => {
+            if (err) event.reply('error', err);
             else event.reply('set-setting', setting);
         });
     })
 
     // 권한 받기
     ipcMain.on('get-permission', (event, arg) => {
-        fs.readFile('./src/server/permission.json', (err, data) => {
-            if (err) event.reply('get-permission', err);
-            else event.reply('get-permission', data);
+        fs.readFile('./datas/src/server/permission.json', (err, data) => {
+            if (err) event.reply('error', err);
+            else event.reply('get-permission', JSON.parse(String(data)));
         })
     })
 
     // 권한 바꿈
     ipcMain.on('set-permission', (event, arg) => {
         const permission = arg as string;
-        fs.writeFile('./src/server/permission.json', permission, 'utf-8', (err) => {
-            if (err) event.reply('set-permission', err);
+        fs.writeFile('./datas/src/server/permission.json', permission, 'utf-8', (err) => {
+            if (err) event.reply('error', err);
             else event.reply('set-permission', permission);
         });
     })

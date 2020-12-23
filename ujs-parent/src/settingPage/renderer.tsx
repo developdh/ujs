@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./Components/App/App";
 import { ipcRenderer } from 'electron';
+import axios from 'axios';
 
 
 /**
@@ -46,3 +47,14 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
 });
 
 ipcRenderer.send('asynchronous-message', 'ping');
+
+ipcRenderer.on('get-setting', (event, arg) => {
+    console.log(arg);
+});
+ipcRenderer.send('get-setting')
+
+axios.get('http://localhost:2933/setting').then(res => {console.log(res.data)});
+
+ipcRenderer.on('error', (event, arg) => {
+    console.error(arg);
+})

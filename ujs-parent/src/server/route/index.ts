@@ -2,7 +2,6 @@ import * as express from 'express';
 import createHttpError from 'http-errors';
 import * as jwt from 'jsonwebtoken';
 import { evalSafe } from 'eval-safe';
-import setting from '../data.json';
 import * as fs from 'fs';
 
 interface jwtType {
@@ -51,30 +50,30 @@ router.get('/auth', (req, res, next) => {
 
 // deprecated soon!
 router.get('/setting', (req, res, next) => {
-    fs.readFile('./src/server/data.json', (err, data) => {
+    fs.readFile('./datas/src/server/data.json', (err, data) => {
         if (err) res.send(err);
-        else res.send(data);
+        else res.send(String(data));
     })
 })
 
 router.post('/setting', async (req, res, next) => {
     const setting = String(req.body.setting);
-    fs.writeFile('./src/server/data.json', setting, 'utf-8', (err) => {
+    fs.writeFile('./datas/src/server/data.json', setting, 'utf-8', (err) => {
         if (err) res.send(err);
         else res.send(setting);
     });
 })
 
 router.get('/permission', (req, res, next) => {
-    fs.readFile('./src/server/permission.json', (err, data) => {
+    fs.readFile('./datas/src/server/permission.json', (err, data) => {
         if (err) res.send(err);
-        else res.send(data);
+        else res.send(String(data));
     })
 })
 
 router.post('/permission', async (req, res, next) => {
     const permission = String(req.body.permission);
-    fs.writeFile('./src/server/permission.json', permission, 'utf-8', (err) => {
+    fs.writeFile('./datas/src/server/permission.json', permission, 'utf-8', (err) => {
         if (err) res.send(err);
         else res.send(permission);
     });
