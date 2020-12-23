@@ -3,7 +3,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./Components/App/App";
 
-import { spawn } from 'child_process';
 
 /**
  * This file will automatically be loaded by webpack and run in the "renderer" context.
@@ -38,11 +37,3 @@ import './index.css';
 const main = document.getElementById("main");
 
 ReactDOM.render(<App/>, main);
-
-const node = spawn(
-    ".\\node_modules\\node\\bin\\node.exe",
-    ["./dist/server/server"],
-    {
-      cwd: process.cwd()
-    }
-);
