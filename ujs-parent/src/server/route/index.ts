@@ -49,6 +49,7 @@ router.get('/auth', (req, res, next) => {
     }
 })
 
+// deprecated soon!
 router.get('/setting', (req, res, next) => {
     fs.readFile('./src/server/data.json', (err, data) => {
         if (err) res.send(err);
