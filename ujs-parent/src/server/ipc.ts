@@ -23,11 +23,11 @@ export function ipcStart(){
     })
 
     // 설정 바꿈
-    ipcMain.on('edit-setting', (event, arg) => {
+    ipcMain.on('set-setting', (event, arg) => {
         const setting = arg as string;
         fs.writeFile('./src/server/setting.json', setting, 'utf-8', (err) => {
-            if (err) event.reply('edit-setting', err);
-            else event.reply('edit-setting', setting);
+            if (err) event.reply('set-setting', err);
+            else event.reply('set-setting', setting);
         });
     })
 
@@ -40,11 +40,11 @@ export function ipcStart(){
     })
 
     // 권한 바꿈
-    ipcMain.on('edit-permission', (event, arg) => {
+    ipcMain.on('set-permission', (event, arg) => {
         const permission = arg as string;
         fs.writeFile('./src/server/permission.json', permission, 'utf-8', (err) => {
-            if (err) event.reply('edit-setting', err);
-            else event.reply('edit-setting', permission);
+            if (err) event.reply('set-permission', err);
+            else event.reply('set-permission', permission);
         });
     })
 }
