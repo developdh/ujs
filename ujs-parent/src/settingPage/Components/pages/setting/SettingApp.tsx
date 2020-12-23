@@ -4,6 +4,7 @@ import SettingList from './SettingList';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
+import { ipcRenderer } from 'electron';
 
 class SettingApp extends Component {
   id = 0
@@ -32,8 +33,11 @@ class SettingApp extends Component {
     });
   }
   componentDidMount() {
-    axios.get('http://localhost:2933/setting').then(res => { this.setState({ information: res.data }) });
-  }
+    //axios.get('http://localhost:2933/setting').then(res => { this.setState({ information: res.data }) });
+    ipcRenderer.on('get-setting', (event, arg) => {
+      this.setState({ information: arg.data })
+    });
+  }
   render() {
     const { information } = this.state;
     const buttonStyle = {
@@ -58,7 +62,8 @@ class SettingApp extends Component {
           style={buttonStyle}
           startIcon={<SaveIcon />}
           onClick={(e) => {
-            axios.post('http://localhost:2933/setting', { setting: JSON.stringify(information) });
+            //axios.post('http://localhost:2933/setting', { setting: JSON.stringify(information) });
+            ipcRenderer.send('set-setting', { setting: JSON.stringify(information) });
           }}>Save
         </Button>
       </div>
