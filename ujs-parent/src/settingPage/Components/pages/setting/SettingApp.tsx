@@ -10,7 +10,8 @@ class SettingApp extends Component {
       {
         id: 0,
         name: '',
-        url: ''
+        version: '',
+        checked: true
       }
     ]
   }

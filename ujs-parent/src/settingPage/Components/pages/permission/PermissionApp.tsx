@@ -1,57 +1,57 @@
-import React, { Component, useState } from 'react';
-import sanitizeHtml from 'sanitize-html';
+import React, { Component } from 'react';
+import PermissionForm from './PermissionForm';
+import PermissionList from './PermissionList';
+import axios from 'axios';
 
-const PermissionApp = () => {
-    this.state = {
-        permission: [
+class PermissionApp extends Component {
+    id = 1
+    state = {
+        information: [
             {
-                name: 'example1',
-                checked: false
-            },
-            {
-                name: 'example2',
-                checked: false
-            },
-            {
-                name: 'example3',
-                checked: false
-            },
-            {
-                name: 'example4',
-                checked: false
-            },
-        ],
-        search: ''
+                id: 0,
+                name: '',
+                version: '',
+            }
+        ]
     }
     props: any;
-    handleChange = (e) => {
+    handleCreate = (data) => {
+        const { information } = this.state;
         this.setState({
-            [e.target.search]: e.target.value
-        })
+            information: information.concat({ id: this.id++, ...data })
+        });
     }
-    const defaultOptions = {
-        allowedTags: [ 'b', 'i', 'em', 'strong', 'a' ],
-        allowedAttributes: {
-          'a': [ 'href' ]
-        },
-      };
-      
-      const sanitize = (dirty, options) => ({
-        __html: sanitizeHtml(
-          dirty, 
-          { ...defaultOptions, ...options }
-        )
-      });
-    return(
-        <div>
-            <input 
-                placeholder="이름"
-                value={sanitizeHtml(this.state.name)}
-                onChange={this.handleChange}
-                name="name"
-            />
-        </div>
-    );
+    handleRemove = (id) => {
+        const { information } = this.state;
+        this.setState({
+            information: information.filter(info => info.id !== id)
+        });
+    }
+    componentDidMount() {
+        axios.get('http://localhost:2933/permission').then(res => {this.setState({information: res.data})});
+    }
+    render() {
+        const { information } = this.state;
+
+        const buttonStyle = {
+            width: "40px",
+            hight: "30px",
+        }
+        return (
+            <div>
+                <PermissionForm
+                    onCreate={this.handleCreate}
+                />
+                <PermissionList
+                    data={information}
+                    onRemove={this.handleRemove}
+                />
+                <button style={buttonStyle} onClick={() => {
+                    axios.post('http://localhost:2933/permission', {setting: JSON.stringify(information)});
+                }}>저장</button>
+            </div>
+        );
+    }
 }
 
 export default PermissionApp;

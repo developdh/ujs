@@ -64,5 +64,19 @@ router.post('/setting', async (req, res, next) => {
     });
 })
 
+router.get('/permission', (req, res, next) => {
+    fs.readFile('./src/server/permission.json', (err, data) => {
+        if (err) res.send(err);
+        else res.send(data);
+    })
+})
+
+router.post('/permission', async (req, res, next) => {
+    const permission = String(req.body.permission);
+    fs.writeFile('./src/server/permission.json', permission, 'utf-8', (err) => {
+        if (err) res.send(err);
+        else res.send(permission);
+    });
+})
 
 export default router;

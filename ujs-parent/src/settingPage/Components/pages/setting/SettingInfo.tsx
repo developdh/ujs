@@ -17,11 +17,11 @@ class SettingInfo extends Component {
     const {
       name, url
     } = this.props.info;
-    
+
     return (
       <div style={style}>
-        <div><b>{name}</b></div>
-        <div>{url}</div>
+        <b>{name}</b>{'  '}
+        {url}{'  '}
         <button onClick={this.handleRemove}>삭제</button>
       </div>
     );
