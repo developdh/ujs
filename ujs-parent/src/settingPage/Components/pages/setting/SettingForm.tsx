@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
+import TextField from '@material-ui/core/TextField';
+import {Properties as css} from 'csstype';
 
 class SettingForm extends Component {
   state = {
@@ -38,14 +40,17 @@ class SettingForm extends Component {
     
     return (
       <form onSubmit={this.handleSubmit}>
-        <input
-          placeholder="이름"
+        <TextField
+          label="Site Name"
           value={sanitizeHtml(this.state.name)}
           onChange={this.handleChange}
+          onClick={(e) => {
+            e.preventDefault();
+          }}
           name="name"
         />
-        <input
-          placeholder="URL"
+        <TextField
+          label="URL"
           value={sanitizeHtml(this.state.url)}
           onChange={this.handleChange}
           name="url"

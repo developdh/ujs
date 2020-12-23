@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import PermissionForm from './PermissionForm';
 import PermissionList from './PermissionList';
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
 
 class PermissionApp extends Component {
-    id = 1
+    id = 0
     state = {
         information: [
             {
@@ -28,14 +30,15 @@ class PermissionApp extends Component {
         });
     }
     componentDidMount() {
-        axios.get('http://localhost:2933/permission').then(res => {this.setState({information: res.data})});
+        axios.get('http://localhost:2933/permission').then(res => { this.setState({ information: res.data }) });
     }
     render() {
         const { information } = this.state;
 
         const buttonStyle = {
-            width: "40px",
-            hight: "30px",
+            width: "100px",
+            height: "30px",
+            backgroundColor: '#181F29',
         }
         return (
             <div>
@@ -46,9 +49,16 @@ class PermissionApp extends Component {
                     data={information}
                     onRemove={this.handleRemove}
                 />
-                <button style={buttonStyle} onClick={() => {
-                    axios.post('http://localhost:2933/permission', {setting: JSON.stringify(information)});
-                }}>저장</button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    style={buttonStyle}
+                    startIcon={<SaveIcon />}
+                    onClick={() => {
+                        axios.post('http://localhost:2933/permission', { setting: JSON.stringify(information) });
+                    }}>Save
+                </Button>
             </div>
         );
     }

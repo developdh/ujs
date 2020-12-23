@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
+import TextField from '@material-ui/core/TextField';
 
 class PermissionForm extends Component {
     state = {
@@ -39,14 +40,14 @@ class PermissionForm extends Component {
 
         return (
             <form onSubmit={this.handleSubmit}>
-                <input
-                    placeholder="Permission Name"
+                <TextField
+                    label="Permission Name"
                     value={sanitizeHtml(this.state.name)}
                     onChange={this.handleChange}
                     name="name"
                 />
-                <input
-                    placeholder="Version"
+                <TextField
+                    label="Version"
                     value={sanitizeHtml(this.state.version)}
                     onChange={this.handleChange}
                     name="version"
