@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 
 class PermissionForm extends Component {
     state = {
@@ -38,6 +40,12 @@ class PermissionForm extends Component {
             )
         });
 
+        const buttonStyle = {
+            width: "100px",
+            height: "47px",
+            backgroundColor: '#181F29',
+        }
+
         return (
             <form onSubmit={this.handleSubmit}>
                 <TextField
@@ -52,7 +60,16 @@ class PermissionForm extends Component {
                     onChange={this.handleChange}
                     name="version"
                 />
-                <button type="submit">등록</button>
+                <Button 
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    style={buttonStyle}
+                    startIcon={<AddBoxIcon />}
+                >
+                    Enroll
+                </Button>
             </form>
         );
     }

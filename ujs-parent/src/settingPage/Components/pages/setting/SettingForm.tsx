@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import TextField from '@material-ui/core/TextField';
-import {Properties as css} from 'csstype';
+import Button from '@material-ui/core/Button';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 
 class SettingForm extends Component {
   state = {
@@ -25,19 +26,23 @@ class SettingForm extends Component {
   }
   render() {
     const defaultOptions = {
-      allowedTags: [ 'b', 'i', 'em', 'strong', 'a' ],
+      allowedTags: ['b', 'i', 'em', 'strong', 'a'],
       allowedAttributes: {
-        'a': [ 'href' ]
+        'a': ['href']
       },
     };
-    
+
     const sanitize = (dirty, options) => ({
       __html: sanitizeHtml(
-        dirty, 
+        dirty,
         { ...defaultOptions, ...options }
       )
     });
-    
+    const buttonStyle = {
+      width: "100px",
+      height: "47px",
+      backgroundColor: '#181F29',
+    }
     return (
       <form onSubmit={this.handleSubmit}>
         <TextField
@@ -55,7 +60,16 @@ class SettingForm extends Component {
           onChange={this.handleChange}
           name="url"
         />
-        <button type="submit">등록</button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          style={buttonStyle}
+          startIcon={<AddBoxIcon />}
+        >
+          Enroll
+        </Button>
       </form>
     );
   }
