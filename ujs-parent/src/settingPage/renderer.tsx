@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./Components/App/App";
+import { ipcRenderer } from 'electron';
 
 
 /**
@@ -37,3 +38,11 @@ import './index.css';
 const main = document.getElementById("main");
 
 ReactDOM.render(<App/>, main);
+
+console.log(ipcRenderer.sendSync('synchronous-message', 'ping'));
+
+ipcRenderer.on('asynchronous-reply', (event, arg) => {
+    console.log(arg);
+});
+
+ipcRenderer.send('asynchronous-message', 'ping');

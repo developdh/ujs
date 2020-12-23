@@ -5,6 +5,7 @@ import cors from 'cors';
 import indexRouter from './route/index';
 import { ioStart as socketStart } from './socket';
 import bodyParser from 'body-parser';
+import { ipcStart } from './ipc';
 
 
 const app = express();
@@ -40,6 +41,9 @@ export function serverStart(){
 
     // socket.io 코드 =========================================================================
     socketStart();
+
+    // ipc 코드 ==============================================================================
+    ipcStart();
 
     // 서버시작 코드 =========================================================================
     server.listen(port, () => {
