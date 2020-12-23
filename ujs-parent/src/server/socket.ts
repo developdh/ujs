@@ -58,7 +58,7 @@ export function ioStart() {
                 const raw_token = data.jwt.split('jwt ')[1] as string;
                 const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
 
-                const childDir = `../ujs-child/${token.origin64}`;
+                const childDir = `./ujs-child/${token.origin64}`;
 
                 // 에러 처리
                 if (serverList[token.origin] !== undefined) {
@@ -71,7 +71,7 @@ export function ioStart() {
                     fs.statSync(childDir);
                 } catch (err) {
                     if (err.code === 'ENOENT') {
-                        await ncp(`../ujs-child/template`, childDir);
+                        await ncp(`./ujs-child/template`, childDir);
                     }
                 }
 
