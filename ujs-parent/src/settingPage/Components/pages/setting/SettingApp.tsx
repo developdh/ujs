@@ -64,7 +64,7 @@ class SettingApp extends Component {
           startIcon={<SaveIcon />}
           onClick={(e) => {
             //axios.post('http://localhost:2933/setting', { setting: JSON.stringify(information) });
-            ipcRenderer.send('set-setting', { setting: JSON.stringify(information) });
+            ipcRenderer.send('set-setting', JSON.stringify(information));
           }}>Save
         </Button>
       </div>

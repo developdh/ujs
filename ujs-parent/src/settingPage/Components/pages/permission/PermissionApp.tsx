@@ -33,8 +33,9 @@ class PermissionApp extends Component {
     componentDidMount() {
         //axios.get('http://localhost:2933/permission').then(res => { this.setState({ information: res.data }) });
         ipcRenderer.on('get-permission', (event, arg) => {
-            this.setState({ information: arg.data })
-          });
+            this.setState({ information: arg })
+        });
+        ipcRenderer.send('get-permission');
     }
     render() {
         const { information } = this.state;
@@ -61,7 +62,7 @@ class PermissionApp extends Component {
                     startIcon={<SaveIcon />}
                     onClick={() => {
                         //axios.post('http://localhost:2933/permission', { setting: JSON.stringify(information) });
-                        ipcRenderer.send('set-permission', { setting: JSON.stringify(information) });
+                        ipcRenderer.send('set-permission', JSON.stringify(information));
                     }}>Save
                 </Button>
             </div>
