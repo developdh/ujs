@@ -123,8 +123,18 @@ export function ioStart() {
             }
         })
         // 프로세스에 메세지 전송 =========================================================================
-        socket.on('spawn_message', () => {
+        socket.on('spawn_message', (data) => {
+            try{
+                //jwt 파싱
+                const raw_token = data.jwt.split('jwt ')[1] as string;
+                const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
 
+                const server = serverList[token.origin];
+    
+                server.process.send({ type: 'message', command: data.message });
+            } catch (err) {
+                socket.emit('spawn_error', err);
+            }
         })
 
         // 연결 끊겻을때 =========================================================================
