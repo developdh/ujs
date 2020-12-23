@@ -5,6 +5,7 @@ import { fork, ChildProcess, exec as normalExec } from 'child_process';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
+import { DockerProcess } from './docker';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -21,7 +22,7 @@ let serverList: { [origin: string]: Server } = {};
 let socketList: { [soketId: string]: string } = {};
 
 interface Server {
-    process?: ChildProcess;
+    process?: ChildProcess | DockerProcess;
     timeoutId?: any;
 }
 
@@ -32,21 +33,6 @@ const JwtSecretKey = 'ggurikitakati'
 export function ioStart() {
     io.on('connection', (socket) => {
         console.log('a user connected : ' + socket.id);
-        // 코드 실행 =========================================================================
-        socket.on('spawn_exec', (data) => {
-            try {
-                // jwt 해독
-                const raw_token = data.jwt.split('jwt ')[1] as string;
-                const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
-                // 서버 객체 가져옴
-                const server = serverList[token.origin];
-                // 명령어 실행
-                server.process.send({ type: 'exec', command: data.command });
-            } catch (err) {
-                // 오류 처리
-                socket.emit('evalResult', err);
-            }
-        })
         // ** for testing! don't delete! ** =========================================================================
         socket.on('print', (data) => {
             console.log(data);
@@ -59,6 +45,13 @@ export function ioStart() {
                 const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
 
                 const childDir = `./datas/ujs-child/${token.origin64}`;
+                const workspacePath = childDir + "/workspace";
+                const dockerMode = !!data.docker;
+                const dockerModePermissions = {
+                    ports: data.ports,
+                    directories: data.directories
+                };
+
 
                 // 에러 처리
                 if (serverList[token.origin] !== undefined) {
@@ -71,22 +64,32 @@ export function ioStart() {
                     fs.statSync(childDir);
                 } catch (err) {
                     if (err.code === 'ENOENT') {
-                        await ncp(`./datas/ujs-child/template`, childDir);
+                        if(!dockerMode)
+                            await ncp(`./datas/ujs-child/template`, childDir);
+                        
+                        fs.promises.mkdir(workspacePath, { recursive:true });
                     }
                 }
 
                 // 모듈 다운로드
-                for (let i in data.dependencies) {
-                    if (data.dependencies[i] === null) {
-                        await exec(`npm install ${i}`, { cwd: childDir });
-                    } else {
-                        await exec(`npm install ${i}@${data.dependencies[i]}`, { cwd: childDir });
+                if(!dockerMode) {
+                    for (let i in data.dependencies) {
+                        if (data.dependencies[i] === null) {
+                            await exec(`npm install ${i}`, { cwd: childDir });
+                        } else {
+                            await exec(`npm install ${i}@${data.dependencies[i]}`, { cwd: childDir });
+                        }
                     }
                 }
 
                 // 서버 설정
                 const server: Server = {
-                    process: fork(childDir + '/js/child'),
+                    process: (
+                        dockerMode ?
+                            await new DockerProcess(workspacePath, dockerModePermissions, data.dependencies).start()
+                        :
+                            fork(childDir + '/js/child')
+                    )
                 };
 
                 serverList[token.origin] = server;  // 서버 객체에 저장
@@ -122,6 +125,21 @@ export function ioStart() {
                 socket.emit('spawn_start', { status: 500, err });
             }
         })
+        // 코드 실행 =========================================================================
+        socket.on('spawn_exec', (data) => {
+            try {
+                // jwt 해독
+                const raw_token = data.jwt.split('jwt ')[1] as string;
+                const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
+                // 서버 객체 가져옴
+                const server = serverList[token.origin];
+                // 명령어 실행
+                server.process.send({ type: 'exec', command: data.command });
+            } catch (err) {
+                // 오류 처리
+                socket.emit('evalResult', err);
+            }
+        })
         // 프로세스에 메세지 전송 =========================================================================
         socket.on('spawn_message', (data) => {
             try{
@@ -131,7 +149,7 @@ export function ioStart() {
 
                 const server = serverList[token.origin];
     
-                server.process.send({ type: 'message', command: data.message });
+                server.process.send({ type: 'message', data: data.message });
             } catch (err) {
                 socket.emit('spawn_error', err);
             }
