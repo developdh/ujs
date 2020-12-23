@@ -48,11 +48,13 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
 
 ipcRenderer.send('asynchronous-message', 'ping');
 
+// 새코드
 ipcRenderer.on('get-setting', (event, arg) => {
     console.log(arg);
 });
 ipcRenderer.send('get-setting')
 
+// 원코드
 axios.get('http://localhost:2933/setting').then(res => {console.log(res.data)});
 
 ipcRenderer.on('error', (event, arg) => {
