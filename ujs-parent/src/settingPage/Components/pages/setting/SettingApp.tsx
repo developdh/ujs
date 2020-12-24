@@ -5,6 +5,7 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import { ipcRenderer } from 'electron';
+const { dialog } = require('electron').remote.dialog;
 
 class SettingApp extends Component {
   id = 0
@@ -18,8 +19,8 @@ class SettingApp extends Component {
       }
     ]
   }
-
   props: any;
+
   handleCreate = (data) => {
     const { information } = this.state;
     this.setState({
@@ -66,6 +67,13 @@ class SettingApp extends Component {
             //axios.post('http://localhost:2933/setting', { setting: JSON.stringify(information) });
             ipcRenderer.send('set-setting', JSON.stringify(information));
           }}>Save
+        </Button>
+        <Button
+          onClick={(e) => {
+            ipcRenderer.send('dialog', 'ping');
+          }}
+        >
+          test
         </Button>
       </div>
     );
