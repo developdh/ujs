@@ -30,6 +30,7 @@ class DockerProcess extends EventEmitter {
     containerId: string;
     socket: Socket;
     stdout: import("stream").Readable;
+    stderr: import("stream").Readable;
     port: number;
     exitCode: any;
     dependencies: Dependencies;
@@ -71,6 +72,7 @@ class DockerProcess extends EventEmitter {
         // stdout을 받아오기 위한 프로세스
         this.process = exec(`docker attach ${this.containerId}`);
         this.stdout = this.process.stdout;
+        this.stderr = this.process.stderr;
 
         // EXIT 이벤트
         this.process.on("exit", (code : any) => {

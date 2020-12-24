@@ -121,8 +121,15 @@ export function ioStart() {
                 });
                 
                 server.process.stdout.on("data", data => {
-                    console.log(data, '내가 바로 데이터다');
-                    socket.emit("spawn_data", Array.from(data));
+                    socket.emit("spawn_stdout", {
+                        data: Array.from(data)
+                    });
+                });
+
+                server.process.stderr.on("data", data => {
+                    socket.emit("spawn_stderr", {
+                        data: Array.from(data)
+                    });
                 });
 
                 // 프로세스 오류시
