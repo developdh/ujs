@@ -54,7 +54,7 @@ ipcRenderer.on('get-setting', (event, arg) => {
 ipcRenderer.send('get-setting')
 
 // 원코드
-axios.get('http://localhost:2933/setting').then(res => {console.log(res.data)});
+//axios.get('http://localhost:2933/setting').then(res => {console.log(res.data)});
 
 ipcRenderer.on('error', (event, arg) => {
     console.error(arg);
