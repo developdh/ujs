@@ -44,7 +44,7 @@ class DockerProcess extends EventEmitter {
     async start() {
         this.port = await getPort();
 
-        // 모듈 설치 / 컨테이너 id 얻기
+        // 모듈 설치 / 실행 / 컨테이너 id 얻기
         const runResult = (
             await promisify(exec)(`docker run -d -p ${this.port}:65432 ${
                 this.permissions.ports.map(port => 
@@ -56,20 +56,17 @@ class DockerProcess extends EventEmitter {
                 Object.entries(this.permissions.directories).map(([name, path]) => 
                     `-v "${path}":"/src/src/app/dirs/${name}"`
                 ).join(" ")
-            } ${childImageName} npm i ${
+            } ${childImageName} /bin/bash -c "npm i ${
                 Object.entries(this.dependencies).map(([name, version]) => 
                     `${name}@${version ?? "*"}`
                 ).join(" ")
-            }`)
+            } && node index"`)
         );
         if(runResult.stderr) {
             this.error(runResult.stderr);
             return;
         }
         this.containerId = runResult.stdout.trim();
-
-        // 시작
-        exec(`docker exec ${this.containerId} node index.js`);
 
         // stdout을 받아오기 위한 프로세스
         this.process = exec(`docker attach ${this.containerId}`);
@@ -112,8 +109,8 @@ class DockerProcess extends EventEmitter {
         this.emit("error", error);
     }
     exit(code : any) {
-        this.emit("exit", code);
         this.exitCode = code;
+        this.emit("exit", code);
     }
 }
 

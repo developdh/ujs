@@ -45,7 +45,7 @@ export function ioStart() {
                 const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
 
                 const childDir = `./datas/ujs-child/${token.origin64}`;
-                const workspacePath = childDir + "/workspace";
+                const workspacePath = childDir + '/workspace';
                 const dockerMode = !!data.docker;
                 const dockerModePermissions = {
                     ports: data.ports,
@@ -88,7 +88,7 @@ export function ioStart() {
                         dockerMode ?
                             await new DockerProcess(workspacePath, dockerModePermissions, data.dependencies).start()
                         :
-                            fork(childDir + '/js/child')
+                            fork(childDir + '/js/child', [], { silent: true })
                     )
                 };
 
@@ -103,14 +103,14 @@ export function ioStart() {
                 }
 
                 // 프로세스와 소통 설정
-                server.process.on("message", (message: any) => {
+                server.process.on('message', (message: any) => {
                     socket.emit('spawn_message', {
                         message: message,
                     });
                 });
 
                 // 프로세스 종료시
-                server.process.on("exit", (message: any) => {
+                server.process.on('exit', (message: any) => {
                     if (server.timeoutId)
                         clearTimeout(server.timeoutId);
 
@@ -119,9 +119,22 @@ export function ioStart() {
                         status: server.process.exitCode,
                     });
                 });
+                
+                server.process.stdout.on("data", data => {
+                    console.log(data, '내가 바로 데이터다');
+                    socket.emit("spawn_data", Array.from(data));
+                });
+
+                // 프로세스 오류시
+                server.process.on('error', (err: any) => {
+                    socket.emit('spawn_error', {
+                        err
+                    });
+                })
 
                 socket.emit('spawn_start', { status: 200 });
             } catch (err) {
+                console.log("오류났어요ㅠㅠ", err);
                 socket.emit('spawn_start', { status: 500, err });
             }
         })
@@ -151,7 +164,9 @@ export function ioStart() {
     
                 server.process.send({ type: 'message', data: data.message });
             } catch (err) {
-                socket.emit('spawn_error', err);
+                socket.emit('spawn_error', {
+                    err
+                });
             }
         })
 

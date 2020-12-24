@@ -1,6 +1,10 @@
 
 const { evalSafe } = require("eval-safe");
 
+setInterval(()=>{
+    console.log('hh test');
+}, 1000)
+
 const messageHandlers = new Set();
 
 const save = { $: {} };
