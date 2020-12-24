@@ -9,6 +9,8 @@ const messageHandlers = new Set();
 
 const $ = {};
 
+let socket;
+
 function onMessage(handler) {
     messageHandlers.add(handler);
 }
@@ -18,7 +20,7 @@ function offMessage(handler) {
 }
 
 function sendMessage(message) {
-    process.send(message);
+    socket.emit("message", message);
 }
 
 function messageReceived(message) {
@@ -31,7 +33,9 @@ function messageReceived(message) {
 const io = new Server();
 
 
-io.on("connect", socket => {
+io.on("connect", _socket => {
+    if(socket) return;
+    socket = _socket;
     socket.on("exec", command => {
         eval(command);
     });
