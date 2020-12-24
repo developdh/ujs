@@ -127,13 +127,13 @@ export function ioStart() {
                 
                 server.process.stdout.on("data", data => {
                     socket.emit("spawn_stdout", {
-                        data: Array.from(data)
+                        data
                     });
                 });
 
                 server.process.stderr.on("data", data => {
                     socket.emit("spawn_stderr", {
-                        data: Array.from(data)
+                        data
                     });
                 });
 
@@ -146,7 +146,6 @@ export function ioStart() {
 
                 socket.emit('spawn_start', { status: 200 });
             } catch (err) {
-                console.log("오류났어요ㅠㅠ", err);
                 socket.emit('spawn_start', { status: 500, err });
             }
         })
