@@ -89,7 +89,8 @@ typings/
 out/
 
 # ban ujs-child
-/ujs-child/**
+/ujs-parent/datas/ujs-child/**
 
 # white list
 !/ujs-parent/datas/ujs-child/template/**
+!/ujs-parent/datas/ujs-child/template-docker/**
