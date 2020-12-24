@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
-import { ipcMain } from 'electron';
+import { ipcRenderer } from 'electron';
 import { dialog } from 'electron';
 import { serverStart } from "./server/server";
 
@@ -12,9 +12,12 @@ if (require("electron-squirrel-startup")) {
   // eslint-disable-line global-require
   app.quit();
 }
+
+export let mainWindow: BrowserWindow;
+
 const createWindow = (): void => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
     backgroundColor: "#181F29",
@@ -55,17 +58,18 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.on('dialog', (event, arg) => {
+ipcRenderer.on('dialog-request', (event, arg) => {
   const options = {
     type: 'question',
-    buttons: ['Cancel', 'Yes, please', 'No, thanks'],
-    defaultId: 2,
-    title: 'Question',
-    message: 'Do you want to do this?',
-    detail: 'It does not really matter',
-    checkboxLabel: 'Remember my answer',
-    checkboxChecked: true,
+    buttons: ['Yes', 'No'],
+    defaultId: 1,
+    title: 'helloworld',
+    message: '임나연사랑해?',
+    detail: '히히',
+    //checkboxLabel: 'Remember my answer',
+    //checkboxChecked: true,
   };
-
-  dialog.showMessageBox(options);
-});
+  dialog.showMessageBox(null, options, (response) => {
+    ipcRenderer.send('dialog-response', response);
+  });
+})
