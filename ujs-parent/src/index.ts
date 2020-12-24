@@ -58,14 +58,13 @@ app.on("activate", () => {
 ipcMain.on('dialog', (event, arg) => {
   const options = {
     type: 'question',
-    buttons: ['Cancel', 'Yes, please', 'No, thanks'],
-    defaultId: 2,
-    title: 'Question',
-    message: 'Do you want to do this?',
-    detail: 'It does not really matter',
-    checkboxLabel: 'Remember my answer',
-    checkboxChecked: true,
+    buttons: ['Yes', 'No'],
+    defaultId: 1,
+    title: 'helloworld',
+    message: '임나연사랑해?',
+    detail: '히히',
+    //checkboxLabel: 'Remember my answer',
+    //checkboxChecked: true,
   };
-
   dialog.showMessageBox(options);
-});
+})
