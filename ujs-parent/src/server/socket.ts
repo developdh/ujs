@@ -8,6 +8,7 @@ import * as util from 'util';
 import { DockerProcess } from './docker';
 import isChildImageBuilt from './docker/isChildImageBuilt';
 import buildChildImage from './docker/buildChildImage';
+import { ipcMain } from 'electron';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -54,11 +55,13 @@ export function ioStart() {
                     directories: data.directories
                 };
                 
+                
+
                 // 도커 이미지가 빌드 된적 없다면, 빌드!
                 if(dockerMode && !(await isChildImageBuilt())){
                     await buildChildImage()
                 }
-
+                
                 // 에러 처리
                 if (serverList[token.origin] !== undefined) {
                     socket.emit('spawn_start', { status: 500, err: 'current running' });
