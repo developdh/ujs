@@ -1,11 +1,7 @@
 import { app, BrowserWindow } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
-import { ipcRenderer } from 'electron';
-import { dialog } from 'electron';
 import { serverStart } from "./server/server";
 
-
-serverStart();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -58,18 +54,5 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcRenderer.on('dialog-request', (event, arg) => {
-  const options = {
-    type: 'question',
-    buttons: ['Yes', 'No'],
-    defaultId: 1,
-    title: 'helloworld',
-    message: '임나연사랑해?',
-    detail: '히히',
-    //checkboxLabel: 'Remember my answer',
-    //checkboxChecked: true,
-  };
-  dialog.showMessageBox(null, options, (response) => {
-    ipcRenderer.send('dialog-response', response);
-  });
-})
+serverStart();
+

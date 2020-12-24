@@ -1,6 +1,5 @@
 import { io } from './server';
 import * as jwt from 'jsonwebtoken';
-import { evalSafe } from 'eval-safe';
 import { fork, ChildProcess, exec as normalExec } from 'child_process';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
@@ -9,10 +8,20 @@ import { DockerProcess } from './docker';
 import isChildImageBuilt from './docker/isChildImageBuilt';
 import buildChildImage from './docker/buildChildImage';
 import { ipcMain } from 'electron';
+import { mainWindow as win } from '../index'
+import { dialog } from 'electron';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
 const readFile = util.promisify(fs.readFile);
+// const ipc_on = util.promisify(ipcMain.on);
+const ipc_once = (key) => {
+    return new Promise((resolve, reject) => {
+        ipcMain.once(key, (event, arg) => {
+            resolve(arg);
+        });
+    });
+}
 
 interface JwtType {
     origin: string,
@@ -20,6 +29,17 @@ interface JwtType {
     iot?: number;
     exp?: number;
 }
+
+let options = {
+    type: 'question',
+    buttons: ['Yes', 'No'],
+    defaultId: 1,
+    title: 'helloworld',
+    message: '임나연사랑해?',
+    detail: '히히',
+    //checkboxLabel: 'Remember my answer',
+    //checkboxChecked: true,
+  };
 
 let serverList: { [origin: string]: Server } = {};
 let socketList: { [soketId: string]: string } = {};
@@ -55,7 +75,13 @@ export function ioStart() {
                     directories: data.directories
                 };
                 
-                
+                // 팝업 띄워서 실행 여부 물어봄
+                win.webContents.send('dialog-request', {data, token});
+                let res = await dialog.showMessageBox(options);
+                if(res.response == 1){
+                    socket.emit('spawn_start', { status: 403, err:'denined' });
+                    return;
+                }
 
                 // 도커 이미지가 빌드 된적 없다면, 빌드!
                 if(dockerMode && !(await isChildImageBuilt())){
