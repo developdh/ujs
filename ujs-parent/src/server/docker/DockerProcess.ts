@@ -2,7 +2,7 @@
 import { spawn, exec, execSync } from "child_process";
 import { promisify } from "util";
 import { childImageName } from "./consts";
-import { io, Socket } from "socket.io-client";
+import socketIo from "./socket.io";
 import { EventEmitter } from "events";
 import getPort from "get-port";
 import Permissions from "./Permissions";
@@ -12,7 +12,8 @@ import path from "path";
 interface Dependencies {
     [name: string]: string
 }
-
+//{ io, Socket }
+const { io, Socket } = socketIo;
 
 interface DockerProcess extends EventEmitter {
     on(event : "message", callback : (message : any) => void): this;
@@ -28,7 +29,7 @@ class DockerProcess extends EventEmitter {
     process: import("child_process").ChildProcessWithoutNullStreams;
     permissions: Permissions;
     containerId: string;
-    socket: Socket;
+    socket: socketIo.Socket;
     stdout: import("stream").Readable;
     stderr: import("stream").Readable;
     port: number;
@@ -111,6 +112,7 @@ class DockerProcess extends EventEmitter {
         this.emit("error", error);
     }
     exit(code : any) {
+        this.stop();
         this.exitCode = code;
         this.emit("exit", code);
     }
