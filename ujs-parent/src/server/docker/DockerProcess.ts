@@ -32,7 +32,7 @@ class DockerProcess extends EventEmitter {
     stdout: import("stream").Readable;
     stderr: import("stream").Readable;
     port: number;
-    exitCode: any;
+    exitCode = null;
     dependencies: Dependencies;
 
     constructor(workspacePath : string, permissions : Permissions, dependencies : Dependencies) {

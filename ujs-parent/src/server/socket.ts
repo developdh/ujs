@@ -6,6 +6,8 @@ import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
 import { DockerProcess } from './docker';
+import isChildImageBuilt from './docker/isChildImageBuilt';
+import buildChildImage from './docker/buildChildImage';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -51,7 +53,11 @@ export function ioStart() {
                     ports: data.ports,
                     directories: data.directories
                 };
-
+                
+                // 도커 이미지가 빌드 된적 없다면, 빌드!
+                if(dockerMode && !(await isChildImageBuilt())){
+                    await buildChildImage()
+                }
 
                 // 에러 처리
                 if (serverList[token.origin] !== undefined) {
@@ -66,7 +72,6 @@ export function ioStart() {
                     if (err.code === 'ENOENT') {
                         if(!dockerMode)
                             await ncp(`./datas/ujs-child/template`, childDir);
-                        
                         fs.promises.mkdir(workspacePath, { recursive:true });
                     }
                 }
