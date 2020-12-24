@@ -57,7 +57,7 @@
     inquirer "^7.3.3"
     semver "^7.2.1"
 
-"@electron-forge/core@6.0.0-beta.54":
+"@electron-forge/core@6.0.0-beta.54", "@electron-forge/core@^6.0.0-beta.54":
   version "6.0.0-beta.54"
   resolved "https://registry.yarnpkg.com/@electron-forge/core/-/core-6.0.0-beta.54.tgz#76b739b6d28bdac8c3754f1f62b50cf33c765eef"
   integrity sha512-yggZeiwRLnIsQYCT5jKhx2L7I02CwUCjnIzA+CqUZXD0AU1c2o0BA/26dNOGvY/+pr5yWjOXcrGy1hvj3dnLmQ==
@@ -3689,6 +3689,11 @@ get-package-info@^1.0.0:
     debug "^2.2.0"
     lodash.get "^4.0.0"
     read-pkg-up "^2.0.0"
+
+get-port@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/get-port/-/get-port-5.1.1.tgz#0469ed07563479de6efb986baf053dcd7d4e3193"
+  integrity sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==
 
 get-stdin@^4.0.1:
   version "4.0.1"

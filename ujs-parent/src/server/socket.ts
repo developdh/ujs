@@ -5,6 +5,7 @@ import { fork, ChildProcess, exec as normalExec } from 'child_process';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
+import { DockerProcess } from './docker';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -21,7 +22,7 @@ let serverList: { [origin: string]: Server } = {};
 let socketList: { [soketId: string]: string } = {};
 
 interface Server {
-    process?: ChildProcess;
+    process?: ChildProcess | DockerProcess;
     timeoutId?: any;
 }
 
@@ -32,6 +33,118 @@ const JwtSecretKey = 'ggurikitakati'
 export function ioStart() {
     io.on('connection', (socket) => {
         console.log('a user connected : ' + socket.id);
+        // ** for testing! don't delete! ** =========================================================================
+        socket.on('print', (data) => {
+            console.log(data);
+        })
+        // 노드 생성 =========================================================================
+        socket.on('spawnNode', async (data) => {
+            try {
+                //jwt 파싱
+                const raw_token = data.jwt.split('jwt ')[1] as string;
+                const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
+
+                const childDir = `./datas/ujs-child/${token.origin64}`;
+                const workspacePath = childDir + '/workspace';
+                const dockerMode = !!data.docker;
+                const dockerModePermissions = {
+                    ports: data.ports,
+                    directories: data.directories
+                };
+
+
+                // 에러 처리
+                if (serverList[token.origin] !== undefined) {
+                    socket.emit('spawn_start', { status: 500, err: 'current running' });
+                    return;
+                }
+
+                // 디렉토리 복사
+                try {
+                    fs.statSync(childDir);
+                } catch (err) {
+                    if (err.code === 'ENOENT') {
+                        if(!dockerMode)
+                            await ncp(`./datas/ujs-child/template`, childDir);
+                        
+                        fs.promises.mkdir(workspacePath, { recursive:true });
+                    }
+                }
+
+                // 모듈 다운로드
+                if(!dockerMode) {
+                    for (let i in data.dependencies) {
+                        if (data.dependencies[i] === null) {
+                            await exec(`npm install ${i}`, { cwd: childDir });
+                        } else {
+                            await exec(`npm install ${i}@${data.dependencies[i]}`, { cwd: childDir });
+                        }
+                    }
+                }
+
+                // 서버 설정
+                const server: Server = {
+                    process: (
+                        dockerMode ?
+                            await new DockerProcess(workspacePath, dockerModePermissions, data.dependencies).start()
+                        :
+                            fork(childDir + '/js/child', [], { silent: true })
+                    )
+                };
+
+                serverList[token.origin] = server;  // 서버 객체에 저장
+                socketList[socket.id] = token.origin;
+
+                // 타임아웃 설정
+                if (data.alive === false) {
+                    server.timeoutId = setTimeout(() => {
+                        server.process.kill();
+                    }, 1000 * 60 * 60);
+                }
+
+                // 프로세스와 소통 설정
+                server.process.on('message', (message: any) => {
+                    socket.emit('spawn_message', {
+                        message: message,
+                    });
+                });
+
+                // 프로세스 종료시
+                server.process.on('exit', (message: any) => {
+                    if (server.timeoutId)
+                        clearTimeout(server.timeoutId);
+
+                    // 종료 id 보냄
+                    socket.emit('spawn_close', {
+                        status: server.process.exitCode,
+                    });
+                });
+                
+                server.process.stdout.on("data", data => {
+                    socket.emit("spawn_stdout", {
+                        data: Array.from(data)
+                    });
+                });
+
+                server.process.stderr.on("data", data => {
+                    socket.emit("spawn_stderr", {
+                        data: Array.from(data)
+                    });
+                });
+
+                // 프로세스 오류시
+                server.process.on('error', (err: any) => {
+                    socket.emit('spawn_error', {
+                        err
+                    });
+                })
+
+                socket.emit('spawn_start', { status: 200 });
+            } catch (err) {
+                console.log("오류났어요ㅠㅠ", err);
+                socket.emit('spawn_start', { status: 500, err });
+            }
+        })
         // 코드 실행 =========================================================================
         socket.on('spawn_exec', (data) => {
             try {
@@ -47,81 +160,6 @@ export function ioStart() {
                 socket.emit('evalResult', err);
             }
         })
-        // ** for testing! don't delete! ** =========================================================================
-        socket.on('print', (data) => {
-            console.log(data);
-        })
-        // 노드 생성 =========================================================================
-        socket.on('spawnNode', async (data) => {
-            try {
-                //jwt 파싱
-                const raw_token = data.jwt.split('jwt ')[1] as string;
-                const token = jwt.verify(raw_token, JwtSecretKey) as JwtType;
-
-                const childDir = `./datas/ujs-child/${token.origin64}`;
-
-                // 에러 처리
-                if (serverList[token.origin] !== undefined) {
-                    socket.emit('spawn_start', { status: 500, err: 'current running' });
-                    return;
-                }
-
-                // 디렉토리 복사
-                try {
-                    fs.statSync(childDir);
-                } catch (err) {
-                    if (err.code === 'ENOENT') {
-                        await ncp(`./datas/ujs-child/template`, childDir);
-                    }
-                }
-
-                // 모듈 다운로드
-                for (let i in data.dependencies) {
-                    if (data.dependencies[i] === null) {
-                        await exec(`npm install ${i}`, { cwd: childDir });
-                    } else {
-                        await exec(`npm install ${i}@${data.dependencies[i]}`, { cwd: childDir });
-                    }
-                }
-
-                // 서버 설정
-                const server: Server = {
-                    process: fork(childDir + '/js/child'),
-                };
-
-                serverList[token.origin] = server;  // 서버 객체에 저장
-                socketList[socket.id] = token.origin;
-
-                // 타임아웃 설정
-                if (data.alive === false) {
-                    server.timeoutId = setTimeout(() => {
-                        server.process.kill();
-                    }, 1000 * 60 * 60);
-                }
-
-                // 프로세스와 소통 설정
-                server.process.on("message", (message: any) => {
-                    socket.emit('spawn_message', {
-                        message: message,
-                    });
-                });
-
-                // 프로세스 종료시
-                server.process.on("exit", (message: any) => {
-                    if (server.timeoutId)
-                        clearTimeout(server.timeoutId);
-
-                    // 종료 id 보냄
-                    socket.emit('spawn_close', {
-                        status: server.process.exitCode,
-                    });
-                });
-
-                socket.emit('spawn_start', { status: 200 });
-            } catch (err) {
-                socket.emit('spawn_start', { status: 500, err });
-            }
-        })
         // 프로세스에 메세지 전송 =========================================================================
         socket.on('spawn_message', (data) => {
             try{
@@ -131,9 +169,11 @@ export function ioStart() {
 
                 const server = serverList[token.origin];
     
-                server.process.send({ type: 'message', command: data.message });
+                server.process.send({ type: 'message', data: data.message });
             } catch (err) {
-                socket.emit('spawn_error', err);
+                socket.emit('spawn_error', {
+                    err
+                });
             }
         })
 
