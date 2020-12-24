@@ -68,13 +68,6 @@ class SettingApp extends Component {
             ipcRenderer.send('set-setting', JSON.stringify(information));
           }}>Save
         </Button>
-        <Button
-          onClick={(e) => {
-            ipcRenderer.send('dialog', 'ping');
-          }}
-        >
-          test
-        </Button>
       </div>
     );
   }

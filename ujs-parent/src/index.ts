@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
-import { ipcMain } from 'electron';
+import { ipcRenderer } from 'electron';
 import { dialog } from 'electron';
 import { serverStart } from "./server/server";
 
@@ -58,7 +58,7 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.on('dialog', (event, arg) => {
+ipcRenderer.on('dialog-request', (event, arg) => {
   const options = {
     type: 'question',
     buttons: ['Yes', 'No'],
@@ -69,5 +69,7 @@ ipcMain.on('dialog', (event, arg) => {
     //checkboxLabel: 'Remember my answer',
     //checkboxChecked: true,
   };
-  dialog.showMessageBox(options);
+  dialog.showMessageBox(null, options, (response) => {
+    ipcRenderer.send('dialog-response', response);
+  });
 })
