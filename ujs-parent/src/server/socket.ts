@@ -4,7 +4,7 @@ import { fork, ChildProcess, exec as normalExec } from 'child_process';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
-import { DockerProcess } from './docker';
+import { DockerProcess, isDockerInstalled } from './docker';
 import isChildImageBuilt from './docker/isChildImageBuilt';
 import buildChildImage from './docker/buildChildImage';
 import { ipcMain } from 'electron';
@@ -81,6 +81,12 @@ export function ioStart() {
                 let res = await dialog.showMessageBox(options);
                 if(res.response == 1){
                     socket.emit('spawn_start', { status: 403, err:'denined' });
+                    return;
+                }
+
+                // 도커모드인데 도커가 없다면, not found!
+                if(dockerMode && !(await isDockerInstalled())) {
+                    socket.emit('spawn_start', { status: 400, err:'not found' });
                     return;
                 }
 
