@@ -34,9 +34,9 @@ let options = {
     type: 'question',
     buttons: ['Yes', 'No'],
     defaultId: 1,
-    title: 'helloworld',
-    message: '임나연사랑해?',
-    detail: '히히',
+    title: 'ujs',
+    message: '목 돌리니깐 뽁뽁이소리남; / 강성우',
+    detail: '임나연 사랑해~~~!! / 김동희',
     //checkboxLabel: 'Remember my answer',
     //checkboxChecked: true,
   };
@@ -75,7 +75,8 @@ export function ioStart() {
                     directories: data.directories
                 };
                 
-                // 팝업 띄워서 실행 여부 물어봄
+                options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
+                options.detail = ``;
                 win.webContents.send('dialog-request', {data, token});
                 let res = await dialog.showMessageBox(options);
                 if(res.response == 1){
