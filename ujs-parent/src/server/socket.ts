@@ -93,8 +93,35 @@ export function ioStart() {
 
                 } else { // 설정(권한) 이제 받아야 한다.
 
-                    options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
-                    options.detail = ``;
+                    options.message = `${token.origin} 에서 다음과 같은 권한으로 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
+                    options.detail = (
+                        `모드 : ${dockerMode ? "도커" : "노드"}\n\n`
+                        + (
+                            "폴더들 :::\n"
+                            + Object.values(data.directories ?? {})
+                                .join("\n")
+                            + "\n\n"
+                        )
+                        + (
+                            dockerMode ?
+                                ""
+                            :
+                                "모듈들 :::\n"
+                                + Object.entries(data.dependencies ?? {})
+                                    .map(([name, version]) => `${name}@${version ?? "*"}`)
+                                    .join("\n")
+                                + "\n\n"
+                        )
+                        + (
+                            dockerMode ?
+                                "포트들 :::\n"
+                                + (data.ports ?? [])
+                                    .join("\n")
+                                + ""
+                            :
+                                ""
+                        )
+                    );
 
                     // 앱이 요청하는 모든 것들을 다 물어본다
     
@@ -108,12 +135,12 @@ export function ioStart() {
                     // 권한 허용됨 리스트에 추가
                     const setting : (Info & {id:number}) = {
                         id: 1,
-                        name: data.url,
+                        name: token.origin,
                         url: token.origin,
                         docker: dockerMode,
-                        directories: data.directories,
-                        dependencies: data.dependencies,
-                        ports: data.ports
+                        directories: data.directories ?? {},
+                        dependencies: data.dependencies ?? {},
+                        ports: data.ports ?? []
                     };
                     pushSetting(setting);
                 }
@@ -169,7 +196,12 @@ export function ioStart() {
                         dockerMode ?
                             await new DockerProcess(workspacePath, dockerModePermissions, data.dependencies).start()
                         :
-                            fork(childDir + '/js/child', [], { silent: true })
+                            fork(childDir + '/js/child',
+                                [...Object.keys(data.dependencies ?? {}),
+                                    "/",
+                                    ...Object.entries(data.directories).map(([name, path]) => `${name}:${path}`)
+                                ],
+                            { silent: true })
                     )
                 };
 
@@ -203,13 +235,13 @@ export function ioStart() {
                 
                 server.process.stdout.on("data", data => {
                     socket.emit("spawn_stdout", {
-                        data
+                        data: data.toString()
                     });
                 });
 
                 server.process.stderr.on("data", data => {
                     socket.emit("spawn_stderr", {
-                        data
+                        data: data.toString()
                     });
                 });
 

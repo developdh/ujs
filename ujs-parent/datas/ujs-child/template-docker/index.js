@@ -30,6 +30,13 @@ function messageReceived(message) {
 }
 
 
+const dependencies = process.argv.slice(2, process.argv.indexOf("/"));
+const directories = {
+    __workspace: path.resolve(__dirname, "../workspace"),
+    ...Object.fromEntries(process.argv.slice(process.argv.indexOf("/") + 1).map(v => v.split(":")))
+};
+
+
 const io = new Server();
 
 

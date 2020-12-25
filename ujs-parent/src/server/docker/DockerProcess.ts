@@ -58,11 +58,15 @@ class DockerProcess extends EventEmitter {
                 Object.entries(this.permissions.directories).map(([name, path]) => 
                     `-v "${path}":"/src/src/app/dirs/${name}"`
                 ).join(" ")
-            } ${childImageName} /bin/bash -c "npm i ${
+            } -v "${path.resolve(this.workspacePath, "../node_modules")}":/src/src/app/node_modules ${childImageName} /bin/bash -c "npm i ${
                 Object.entries(this.dependencies).map(([name, version]) => 
                     `${name}@${version ?? "*"}`
                 ).join(" ")
-            } && node index"`)
+            } && node index ${
+                Object.keys(this.dependencies).join(" ")
+            } / ${
+                Object.entries(this.workspacePath).map(([name, path]) => `${name}:${path}`).join(" ")
+            }"`)
         );
         if(runResult.stderr) {
             this.error(runResult.stderr);
