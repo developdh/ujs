@@ -51,7 +51,7 @@ class SettingApp extends Component {
   }
   componentDidMount() {
     // axios.get('http://localhost:2933/setting').then(res => { this.setState({ information: res.data }) });
-    ipcRenderer.on('get-setting', (event, arg) => {
+    ipcRenderer.once('get-setting', (event, arg) => {
       this.setState({ information: arg })
     });
     ipcRenderer.send('get-setting');
