@@ -1,4 +1,3 @@
-
 import React from "react";
 
 function DependencyItem({ name, version } : { name:string, version:string }) {

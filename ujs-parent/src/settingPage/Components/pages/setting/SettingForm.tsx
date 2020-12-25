@@ -3,18 +3,33 @@ import sanitizeHtml from 'sanitize-html';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import Checkbox from '@material-ui/core/Checkbox';
 
 class SettingForm extends Component {
   state = {
     name: '',
     url: '',
     dependencies: {},
-    ports:[],
+    ports: [],
     directories: {},
-    docker:true
+    docker: true
   }
+  count = 0;
 
   props: any;
+  handleDocker = (e) => {
+    if (e.target.value == true || this.count%2 != 0) {
+      this.setState({
+        [e.target.name]: true
+      })
+    }
+    else if (e.target.value == false) {
+      this.setState({
+        [e.target.name]: false
+      })
+    }
+    this.count++;
+  }
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
@@ -25,8 +40,11 @@ class SettingForm extends Component {
     this.props.onCreate(this.state);
     this.setState({
       name: '',
-      url: ''
+      url: '',
+      dependencies: {},
+      docker: true
     })
+    this.count = 0;
   }
   render() {
     const defaultOptions = {
@@ -60,6 +78,12 @@ class SettingForm extends Component {
           value={sanitizeHtml(this.state.url)}
           onChange={this.handleChange}
           name="url"
+        />
+        <Checkbox
+          checked={this.state.docker}
+          onChange={this.handleDocker}
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+          name="docker"
         />
         <Button
           type="submit"

@@ -6,11 +6,11 @@ import { Info } from './SettingApp';
 
 function SettingInfo({ info, onRemove, onUpdate } : {
   info:Info,
-  onRemove:(id:number)=>void,
-  onUpdate:(id:number, info:Info)=>void
+  onRemove:(id:string)=>void,
+  onUpdate:(id:string, info:Info)=>void
 }) {
   const handleRemove = () => {
-    onRemove(info.id);
+    onRemove(info.url);
   }
 
   const style = {
@@ -27,7 +27,7 @@ function SettingInfo({ info, onRemove, onUpdate } : {
   const [ports, setPorts] = useState(info.ports);
 
   useEffect(() => {
-    onUpdate(info.id, {
+    onUpdate(info.url, {
       ...info,
       directories,
       ports

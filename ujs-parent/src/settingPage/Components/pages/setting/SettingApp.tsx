@@ -12,7 +12,6 @@ interface State {
 }
 
 export interface Info {
-  id: number,
   name: string,
   url: string,
   docker: boolean
@@ -38,16 +37,16 @@ class SettingApp extends Component {
       information: information.concat({ id: this.id++, ...data })
     });
   }
-  handleRemove = (id) => {
+  handleRemove = (url) => {
     const { information } = this.state;
     this.setState({
-      information: information.filter(info => info.id !== id)
+      information: information.filter(info => info.url !== url)
     });
   }
-  handleUpdate = (id, newInfo) => {
+  handleUpdate = (url, newInfo) => {
     const { information } = this.state;
     this.setState({
-      information: information.map(info => info.id === id ? newInfo : info)
+      information: information.map(info => info.url === url ? newInfo : info)
     });
   }
   componentDidMount() {
