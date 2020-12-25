@@ -10,6 +10,10 @@ import buildChildImage from './docker/buildChildImage';
 import { ipcMain } from 'electron';
 import { mainWindow as win } from '../index'
 import { dialog } from 'electron';
+import findSetting from './setting/findSetting';
+import pushSetting from './setting/pushSetting';
+import { Info } from './setting/getSettings';
+import { url } from 'inspector';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -61,7 +65,7 @@ export function ioStart() {
             console.log(data);
         })
         // 노드 생성 =========================================================================
-        socket.on('spawnNode', async (data) => {
+        socket.on('spawnNode', async (data : (Info & {jwt:string, alive:boolean})) => {
             try {
                 //jwt 파싱
                 const raw_token = data.jwt.split('jwt ')[1] as string;
@@ -70,19 +74,55 @@ export function ioStart() {
                 const childDir = `./datas/ujs-child/${token.origin64}`;
                 const workspacePath = childDir + '/workspace';
                 const dockerMode = !!data.docker;
+
+                const setting = await findSetting(token.origin);
+                
+                
+                if(setting) { // 이미 설정(권한)이 있다.
+                    options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
+                    options.detail = ``;
+    
+                    win.webContents.send('dialog-request', {data, token});
+                    let res = await dialog.showMessageBox(options);
+                    if(res.response == 1){
+                        socket.emit('spawn_start', { status: 403, err:'denined' });
+                        return;
+                    }
+                    // 덮어씌운다.
+                    Object.assign(data, setting); 
+
+                } else { // 설정(권한) 이제 받아야 한다.
+
+                    options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
+                    options.detail = ``;
+
+                    // 앱이 요청하는 모든 것들을 다 물어본다
+    
+                    win.webContents.send('dialog-request', {data, token});
+                    let res = await dialog.showMessageBox(options);
+                    if(res.response == 1){
+                        socket.emit('spawn_start', { status: 403, err:'denined' });
+                        return;
+                    }
+    
+                    // 권한 허용됨 리스트에 추가
+                    const setting : (Info & {id:number}) = {
+                        id: 1,
+                        name: data.url,
+                        url: token.origin,
+                        docker: dockerMode,
+                        directories: data.directories,
+                        dependencies: data.dependencies,
+                        ports: data.ports
+                    };
+                    pushSetting(setting);
+                }
+
+
                 const dockerModePermissions = {
                     ports: data.ports,
                     directories: data.directories
                 };
-                
-                options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
-                options.detail = ``;
-                win.webContents.send('dialog-request', {data, token});
-                let res = await dialog.showMessageBox(options);
-                if(res.response == 1){
-                    socket.emit('spawn_start', { status: 403, err:'denined' });
-                    return;
-                }
 
                 // 도커모드인데 도커가 없다면, not found!
                 if(dockerMode && !(await isDockerInstalled())) {
