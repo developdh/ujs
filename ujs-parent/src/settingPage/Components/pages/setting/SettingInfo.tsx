@@ -1,13 +1,16 @@
 import React, { Component, useState, useEffect } from 'react';
 import Directory, { Directories } from './Directory/Directory';
+import Dependency from './Dependency/Dependency'
 import Port from './Port/Port';
 import DependencyList, { Dependencies } from './Dependency/DependencyList';
 import { Info } from './SettingApp';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-function SettingInfo({ info, onRemove, onUpdate } : {
-  info:Info,
-  onRemove:(id:string)=>void,
-  onUpdate:(id:string, info:Info)=>void
+function SettingInfo({ info, onRemove, onUpdate }: {
+  info: Info,
+  onRemove: (id: string) => void,
+  onUpdate: (id: string, info: Info) => void
 }) {
   const handleRemove = () => {
     onRemove(info.url);
@@ -20,11 +23,16 @@ function SettingInfo({ info, onRemove, onUpdate } : {
   };
 
   const {
-    name, url, docker, dependencies
+    name, url, docker
   } = info;
 
   const [directories, setDirectories] = useState(info.directories);
+  const [dependencies, setDependencies] = useState(info.dependencies);
   const [ports, setPorts] = useState(info.ports);
+
+  const styleA = {
+    color: 'white',
+  }
 
   useEffect(() => {
     onUpdate(info.url, {
@@ -38,11 +46,13 @@ function SettingInfo({ info, onRemove, onUpdate } : {
     <div style={style}>
       <b>{name}</b>{'  '}
       {url}{'  '}
-      <button onClick={handleRemove}>삭제</button>
+      <Button onClick={handleRemove}>
+        <DeleteIcon style={styleA} fontSize="small" />
+      </Button>
       <div>
-        <Directory directories={directories} onUpdate={setDirectories}/>
-        {!docker ? <DependencyList dependencies={dependencies}/> : undefined}
-        <Port ports={ports} onUpdate={setPorts}/>
+        <Directory directories={directories} onUpdate={setDirectories} />
+        {!docker ? <Dependency dependencies={dependencies} onUpdate={setDependencies} /> : undefined}
+        <Port ports={ports} onUpdate={setPorts} />
       </div>
     </div>
   );

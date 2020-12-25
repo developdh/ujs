@@ -66,10 +66,10 @@ function Directory(props : { directories : Directories, onUpdate:(directories:Di
             <form onSubmit={onSubmit}>
                 <TextField type="text" ref={nameInput} onChange = {event => {
                     setName(event.target.value)
-                }} placeholder="name" style={styleA} value={name}/>
+                }} label="name" style={styleA} value={name}/>
                 <TextField type="text" ref={pathInput} onChange = {event => {
                     setPath(event.target.value)
-                }} placeholder="path" style={styleA} value={path}/>
+                }} label="path" style={styleA} value={path}/>
                 <Button type="submit" style={styleA}>
                     <AddBoxIcon/>
                 </Button>
