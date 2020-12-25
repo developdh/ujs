@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "outDir": "dist",
     "moduleResolution": "node",
+    "target": "es2017",
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"]

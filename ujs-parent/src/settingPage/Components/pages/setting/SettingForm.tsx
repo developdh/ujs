@@ -49,9 +49,6 @@ class SettingForm extends Component {
           label="Site Name"
           value={sanitizeHtml(this.state.name)}
           onChange={this.handleChange}
-          onClick={(e) => {
-            e.preventDefault();
-          }}
           name="name"
         />
         <TextField

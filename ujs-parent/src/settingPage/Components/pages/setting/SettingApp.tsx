@@ -7,17 +7,28 @@ import SaveIcon from '@material-ui/icons/Save';
 import { ipcRenderer } from 'electron';
 const { dialog } = require('electron').remote.dialog;
 
+interface State {
+  information: Info[]
+}
+
+export interface Info {
+  id: number,
+  name: string,
+  url: string,
+  docker: boolean
+  directories: {
+    [name: string]: string
+  },
+  dependencies: {
+    [name: string]: string
+  },
+  ports: number[]
+}
+
 class SettingApp extends Component {
   id = 0
-  state = {
-    information: [
-      {
-        id: 0,
-        name: '',
-        version: '',
-        checked: true
-      }
-    ]
+  state : State = {
+    information: []
   }
   props: any;
 
@@ -31,6 +42,12 @@ class SettingApp extends Component {
     const { information } = this.state;
     this.setState({
       information: information.filter(info => info.id !== id)
+    });
+  }
+  handleUpdate = (id, newInfo) => {
+    const { information } = this.state;
+    this.setState({
+      information: information.map(info => info.id === id ? newInfo : info)
     });
   }
   componentDidMount() {
@@ -55,6 +72,7 @@ class SettingApp extends Component {
         />
         <SettingList
           data={information}
+          onUpdate={this.handleUpdate}
           onRemove={this.handleRemove}
         />
         <Button

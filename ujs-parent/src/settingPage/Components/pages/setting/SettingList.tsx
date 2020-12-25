@@ -3,18 +3,24 @@ import SettingInfo from './SettingInfo';
 
 class SettingList extends Component {
   static defaultProps = {
-    list: [],
+    data: [],
     onRemove: () => console.warn('onRemove not defined'),
   }
   props: any;
+  state : { data: any } = { data:[] } as any;
+  componentDidMount() {
+    this.setState(state => ({ ...state, data:this.props.data }));
+  }
   render() {
-    const { data, onRemove } = this.props;
+    const { onRemove, onUpdate } = this.props;
+    const { data } = this.state;
     const list = data.map(
       info => (
         <SettingInfo
           key={info.id}
           info={info}
           onRemove={onRemove}
+          onUpdate={onUpdate}
         />)
     );
 
