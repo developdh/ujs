@@ -38,7 +38,7 @@ function Port(props : { ports: number[], onUpdate:(ports:number[])=>void }) {
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <TextField type="number" ref={portInput} placeholder="port" InputProps={{ inputProps: { min:1, max:65535 }}} onChange={(event) => {
+                <TextField type="number" ref={portInput} placeholder="port" InputProps={{ inputProps: { min:1, max:65535, style:{color:'white'}}}} onChange={(event) => {
                     usePort(parseInt(event.target.value));
                 }}/>
                 <Button type="submit" style={styleA}>

@@ -11,11 +11,11 @@ function SettingInfo({ info, onRemove, onUpdate }: {
   info: Info,
   onRemove: (id: string) => void,
   onUpdate: (id: string, info: Info) => void
-}) {
+}, props) {
   const handleRemove = () => {
     onRemove(info.url);
   }
-
+  const { classes } = props;
   const style = {
     border: '1px solid black',
     padding: '8px',
@@ -41,17 +41,22 @@ function SettingInfo({ info, onRemove, onUpdate }: {
       ports
     });
   }, [directories, ports]);
-
+  const inlinedisplay = {
+    display: "inline"
+  }
   return (
     <div style={style}>
-      <b>{name}</b>{'  '}
+      <h2 style={inlinedisplay}>{name}</h2>{'  '}
       {url}{'  '}
       <Button onClick={handleRemove}>
         <DeleteIcon style={styleA} fontSize="small" />
       </Button>
       <div>
+        <h3>Directory</h3>
         <Directory directories={directories} onUpdate={setDirectories} />
+        {!docker ? <h3>Dependency</h3> : undefined}
         {!docker ? <Dependency dependencies={dependencies} onUpdate={setDependencies} /> : undefined}
+        <h3>Port</h3>
         <Port ports={ports} onUpdate={setPorts} />
       </div>
     </div>

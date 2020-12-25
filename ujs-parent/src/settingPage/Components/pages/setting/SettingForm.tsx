@@ -72,12 +72,14 @@ class SettingForm extends Component {
           value={sanitizeHtml(this.state.name)}
           onChange={this.handleChange}
           name="name"
+          InputProps={{inputProps:{style:{color:'white'}}}}
         />
         <TextField
           label="URL"
           value={sanitizeHtml(this.state.url)}
           onChange={this.handleChange}
           name="url"
+          InputProps={{inputProps:{style:{color:'white'}}}}
         />
         <Checkbox
           checked={this.state.docker}

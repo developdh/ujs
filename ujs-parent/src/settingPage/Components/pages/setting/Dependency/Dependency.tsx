@@ -57,10 +57,10 @@ function Dependency(props : { dependencies : Dependencies, onUpdate:(Dependency:
             <form onSubmit={onSubmit}>
                 <TextField type="text" ref={keyInput} onChange = {event => {
                     setKey(event.target.value)
-                }} label="key" style={styleA} value={key}/>
+                }} label="key" style={styleA} value={key} InputProps={{inputProps:{style:{color:'white'}}}}/>
                 <TextField type="text" ref={valInput} onChange = {event => {
                     setVal(event.target.value)
-                }} label="value" style={styleA} value={val}/>
+                }} label="value" style={styleA} value={val} InputProps={{inputProps:{style:{color:'white'}}}}/>
                 <Button type="submit" style={styleA}>
                     <AddBoxIcon/>
                 </Button>
