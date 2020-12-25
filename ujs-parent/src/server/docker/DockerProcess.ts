@@ -45,6 +45,27 @@ class DockerProcess extends EventEmitter {
 
     async start() {
         this.port = await getPort();
+        console.log("야야야", `docker run -d -p ${this.port}:65432 ${
+            this.permissions.ports.map(port => 
+                `-p ${port}:${port}`
+            ).join(" ")
+        } ${
+          `-v "${this.workspacePath}":/src/src/app/workspace`  
+        } ${
+            Object.entries(this.permissions.directories).map(([name, path]) => 
+                `-v "${path}":"/src/src/app/dirs/${name}"`
+            ).join(" ")
+        } -v "${path.resolve(this.workspacePath, "../node_modules")}":/src/src/app/node_modules ${childImageName} /bin/bash -c "npm i ${
+            Object.entries(this.dependencies).map(([name, version]) => 
+                `${name}@${version ?? "*"}`
+            ).join(" ")
+        } && node index ${
+            Object.keys(this.dependencies).join(" ")
+        } / ${
+          this.permissions.ports.join(" ")  
+        } / \\"__workspace:${this.workspacePath.split("\\").join("\\\\")}\\" ${
+            Object.entries(this.permissions.directories).map(([name, path]) => `\\"${name}:${path.split("\\").join("\\\\")}\\"`).join(" ")
+        }"`);
 
         // 모듈 설치 / 실행 / 컨테이너 id 얻기
         const runResult = (
@@ -66,8 +87,8 @@ class DockerProcess extends EventEmitter {
                 Object.keys(this.dependencies).join(" ")
             } / ${
               this.permissions.ports.join(" ")  
-            } / __workspace:/src/src/app/workspace ${
-                Object.keys(this.permissions.directories).map(name => `${name}:/src/src/app/dirs/${name}`).join(" ")
+            } / \\"__workspace:${this.workspacePath.split("\\").join("\\\\")}\\" ${
+                Object.entries(this.permissions.directories).map(([name, path]) => `\\"${name}:${path.split("\\").join("\\\\")}\\"`).join(" ")
             }"`)
         );
         if(runResult.stderr) {

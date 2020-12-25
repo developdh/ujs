@@ -14,6 +14,7 @@ import findSetting from './setting/findSetting';
 import pushSetting from './setting/pushSetting';
 import { Info } from './setting/getSettings';
 import { url } from 'inspector';
+import path from 'path';
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -199,6 +200,7 @@ export function ioStart() {
                             fork(childDir + '/js/child',
                                 [...Object.keys(data.dependencies ?? {}),
                                     "/",
+                                    `__workspace:${path.resolve(workspacePath)}`,
                                     ...Object.entries(data.directories).map(([name, path]) => `${name}:${path}`)
                                 ],
                             { silent: true })
