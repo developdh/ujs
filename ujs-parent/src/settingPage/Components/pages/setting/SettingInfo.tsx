@@ -21,7 +21,7 @@ function SettingInfo({ info, onRemove, onUpdate } : {
 
   const {
     name, url, docker, dependencies
-  } = this.props.info;
+  } = info;
 
   const [directories, setDirectories] = useState(info.directories);
   const [ports, setPorts] = useState(info.ports);
@@ -38,10 +38,10 @@ function SettingInfo({ info, onRemove, onUpdate } : {
     <div style={style}>
       <b>{name}</b>{'  '}
       {url}{'  '}
-      <button onClick={this.handleRemove}>삭제</button>
+      <button onClick={handleRemove}>삭제</button>
       <div>
         <Directory directories={directories} onUpdate={setDirectories}/>
-        <DependencyList dependencies={dependencies}/>
+        {!docker ? <DependencyList dependencies={dependencies}/> : undefined}
         <Port ports={ports} onUpdate={setPorts}/>
       </div>
     </div>

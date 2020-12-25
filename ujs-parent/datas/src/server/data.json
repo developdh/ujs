@@ -1,1 +1,1 @@
-[{"id":0,"name":"hello","url":"world", "docker":false, "directories":{"a":"C:\\"}, "ports":[80]}]
+[{"id":0,"name":"aa","url":"bb","dependencies":{},"ports":[77],"directories":{"abc":"dsf"},"docker":true}]

@@ -11,8 +11,8 @@ function DependencyList({ dependencies } : { dependencies: Dependencies }) {
     return (
         <div>
             {
-                Object.entries(dependencies).map(([name, version]) => 
-                    <DependencyItem name={name} version={version}/>
+                Object.entries(dependencies).map(([name, version], i) => 
+                    <DependencyItem name={name} version={version} key={i}/>
                 )
             }
         </div>

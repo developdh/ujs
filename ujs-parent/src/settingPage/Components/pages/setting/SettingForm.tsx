@@ -7,7 +7,11 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 class SettingForm extends Component {
   state = {
     name: '',
-    url: ''
+    url: '',
+    dependencies: {},
+    ports:[],
+    directories: {},
+    docker:true
   }
 
   props: any;

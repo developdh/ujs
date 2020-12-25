@@ -6,8 +6,8 @@ function PortList({ ports, onRemove } : { ports:number[], onRemove:(port:number)
     return (
         <div>
             {
-                ports.map(port => 
-                    <PortItem port={port} onRemove={() => onRemove(port)}/>
+                ports.map((port, i) => 
+                    <PortItem port={port} onRemove={() => onRemove(port)} key={i}/>
                 )
             }
         </div>

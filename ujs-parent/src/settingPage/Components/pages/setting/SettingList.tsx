@@ -7,13 +7,9 @@ class SettingList extends Component {
     onRemove: () => console.warn('onRemove not defined'),
   }
   props: any;
-  state : { data: any } = { data:[] } as any;
-  componentDidMount() {
-    this.setState(state => ({ ...state, data:this.props.data }));
-  }
+
   render() {
-    const { onRemove, onUpdate } = this.props;
-    const { data } = this.state;
+    const { onRemove, onUpdate, data } = this.props;
     const list = data.map(
       info => (
         <SettingInfo
