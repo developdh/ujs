@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"id":1,"name":"null","url":"null","docker":false,"directories":{},"dependencies":{"discord.js":null},"ports":[]}]
+=======
+[{"id":1,"name":"http://127.0.0.1:5000","url":"http://127.0.0.1:5000","docker":true,"directories":{},"dependencies":{"ytdl-core":"4.2.1"},"ports":[]}]
+>>>>>>> 68863fc698c26e190a3a4ededff44bdac3e2168b

@@ -27,10 +27,12 @@ function messageReceived(message) {
 
 
 const dependencies = process.argv.slice(2, process.argv.indexOf("/"));
-const directories = {
-    __workspace: path.resolve(__dirname, "../workspace"),
+const realDirectories = {
     ...Object.fromEntries(process.argv.slice(process.argv.indexOf("/") + 1).map(v => v.split(":")))
 };
+const directories = realDirectories;
+const rDirs = realDirectories;
+const dirs = directories;
 
 
 function _require(moduleName) {
@@ -90,7 +92,10 @@ process.on("message", message => {
             require: _require, 
             dependencies,
             fs: _fs,
-            directories
+            realDirectories,
+            directories,
+            rDirs,
+            dirs
         });
     } else if (message.type === "message") {
         messageReceived(message.data);

@@ -34,10 +34,20 @@ const dependenciesI = process.argv.indexOf("/");
 const dependencies = process.argv.slice(2, dependenciesI);
 const portsI = process.argv.indexOf("/", dependenciesI + 1);
 const ports = process.argv.slice(dependenciesI + 1, portsI).map(v => parseInt(v));
-const directories = {
-    __workspace: path.resolve(__dirname, "../workspace"),
-    ...Object.fromEntries(process.argv.slice(portsI + 1).map(v => v.split(":")))
-};
+
+const realDirectories = Object.fromEntries(process.argv.slice(portsI + 1).map(v => {
+    const splitted = v.split(":");
+    return [splitted[0], splitted.slice(1).join(":")];
+}));
+const directories = Object.fromEntries(Object.keys(realDirectories).map(name => 
+        name === "__workspace" ?
+            [name, "/src/src/app/workspace"]
+        :
+            [name, `/src/src/app/dirs/${name}`]
+    )
+);
+const rDirs = realDirectories;
+const dirs = directories;
 
 
 const io = new Server();
