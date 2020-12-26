@@ -32,12 +32,7 @@ function SettingInfo({ info, onRemove, onUpdate }: {
   const [exps, setExps] = useState(info.openExplorerPerm);
   
   const handleExps = (e) => {
-    if (exps == true) {
-      setExps(false);
-    }
-    else {
-      setExps(true);
-    }
+    exps ? setExps(false) : setExps(true);
   }
 
   const styleA = {
@@ -48,9 +43,11 @@ function SettingInfo({ info, onRemove, onUpdate }: {
     onUpdate(info.url, {
       ...info,
       directories,
-      ports
+      ports,
+      dependencies,
+      openExplorerPerm: exps
     });
-  }, [directories, ports]);
+  }, [directories, ports, dependencies, exps]);
   const inlinedisplay = {
     display: "inline"
   }

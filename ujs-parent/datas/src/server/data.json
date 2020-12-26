@@ -1,1 +1,1 @@
-[{"id":1,"name":"null","url":"null","docker":true,"directories":{},"dependencies":{"socket.io":"3.0.4","external-ip":"2.3.1","express":"4.17.1","cors":"2.8.5"},"ports":[54321]}]
+[{"id":0,"name":"aef","url":"aefe","dependencies":{},"ports":[],"directories":{},"docker":true,"openExplorerPerm":true},{"id":0,"name":"aesf","url":"aef","dependencies":{"aef":"aef"},"ports":[],"directories":{},"docker":false,"openExplorerPerm":false}]
