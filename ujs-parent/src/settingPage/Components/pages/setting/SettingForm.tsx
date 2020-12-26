@@ -83,6 +83,7 @@ class SettingForm extends Component {
           InputProps={{inputProps:{style:{color:'white'}}}}
           InputLabelProps={{style: { color: '#fff' }}}        
         />
+        {"docker:"}
         <Checkbox
           checked={this.state.docker}
           onChange={this.handleDocker}

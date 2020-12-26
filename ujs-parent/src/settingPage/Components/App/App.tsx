@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route, HashRouter } from 'react-router-dom';
 import DashboardPage from '../pages/DashboardPage';
-import About from '../pages/About'
 import Menu from '../component/Menu';
 import SettingApp from '../pages/setting/SettingApp';
 import {Properties as css} from 'csstype';
@@ -18,7 +17,6 @@ const App = () => {
                 <Route path="/" component={Menu}/>
                 <Route exact path="/" component={DashboardPage}/>
                 <Route exact path="/setting" component={SettingApp}/>
-                <Route exact path="/about" component={About}/>
             </HashRouter>
         </body>
     );

@@ -42,7 +42,6 @@ const Menu = () => {
                 <li><span id="logo" style={logo}>UJS</span></li>
                 <li style={li}><NavLink exact to="/" activeStyle={activeStyle} style={link}>Main</NavLink></li>
                 <li style={li}><NavLink to="/setting" activeStyle={activeStyle} style={link}>setting</NavLink></li>
-                <li style={li}><NavLink to="/about" activeStyle={activeStyle} style={link}>about</NavLink></li>
             </ul>
             <hr/>
         </nav>

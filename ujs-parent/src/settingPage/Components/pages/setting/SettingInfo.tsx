@@ -56,8 +56,8 @@ function SettingInfo({ info, onRemove, onUpdate }: {
         <Directory directories={directories} onUpdate={setDirectories} />
         {!docker ? <h3>Dependency</h3> : undefined}
         {!docker ? <Dependency dependencies={dependencies} onUpdate={setDependencies} /> : undefined}
-        <h3>Port</h3>
-        <Port ports={ports} onUpdate={setPorts} />
+        {docker ? <h3>Port</h3> : undefined}
+        {docker ? <Port ports={ports} onUpdate={setPorts} />: undefined}
       </div>
     </div>
   );
