@@ -68,7 +68,7 @@ class DockerProcess extends EventEmitter {
               this.permissions.ports.join(" ")  
             } / \\"__workspace:${this.workspacePath.split("\\").join("\\\\")}\\" ${
                 Object.entries(this.permissions.directories).map(([name, path]) => `\\"${name}:${path.split("\\").join("\\\\")}\\"`).join(" ")
-            }"`)
+            } / ${this.permissions.openExplorerPerm ? 1 : 0}"`)
         );
         if(runResult.stderr) {
             this.error(runResult.stderr);
@@ -90,8 +90,17 @@ class DockerProcess extends EventEmitter {
         this.socket = io(`http://127.0.0.1:${this.port}`);
         this.socket
             .on("message", (message : string) => {
-                this.emit("message", message);
-            }); 
+                this.emit("message", {
+                    type: "message",
+                    message: message
+                });
+            })
+            .on("openExplorer", (path : string) => {
+                this.emit("message", {
+                    type: "openExplorer",
+                    path: path
+                });
+            });
         
         return this;
     }
@@ -108,14 +117,19 @@ class DockerProcess extends EventEmitter {
     message(message : any) {
         this.socket.emit("message", message);
     }
+    throwError(error : any) {
+        this.socket.emit("error", error);
+    }
     exec(command : string) {
         this.socket.emit("exec", command);
     }
-    send({ type, command, data } : { type:string, command?:string, data?:any }) {
+    send({ type, command, data, error } : { type:string, command?:string, data?:any, error?:any }) {
         if(type === "exec")
             this.exec(command);
         else if(type === "message")
             this.message(data);
+        else if(type === "error")
+            this.throwError(error);
     }
 
     error(error : string) {

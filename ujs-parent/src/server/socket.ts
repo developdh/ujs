@@ -4,7 +4,7 @@ import { fork, ChildProcess, exec as normalExec } from 'child_process';
 import { ncp as _ncp } from 'ncp';
 import * as fs from 'fs';
 import * as util from 'util';
-import { DockerProcess, isDockerInstalled } from './docker';
+import { DockerProcess, isDockerInstalled, Permissions } from './docker';
 import isChildImageBuilt from './docker/isChildImageBuilt';
 import buildChildImage from './docker/buildChildImage';
 import { ipcMain } from 'electron';
@@ -15,6 +15,7 @@ import pushSetting from './setting/pushSetting';
 import { Info } from './setting/getSettings';
 import { url } from 'inspector';
 import path from 'path';
+import openExplorer from "open-file-explorer";
 
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
@@ -74,7 +75,6 @@ export function ioStart() {
 
                 const childDir = `./datas/ujs-child/${token.origin64}`;
                 const workspacePath = childDir + '/workspace';
-                const dockerMode = !!data.docker;
 
                 const setting = await findSetting(token.origin);
                 
@@ -93,6 +93,8 @@ export function ioStart() {
                     Object.assign(data, setting); 
 
                 } else { // 설정(권한) 이제 받아야 한다.
+                    const dockerMode = !!data.docker;
+                    const openExplorerPerm = !!data.openExplorerPerm;
 
                     options.message = `${token.origin} 에서 다음과 같은 권한으로 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
                     options.detail = (
@@ -118,6 +120,14 @@ export function ioStart() {
                                 "포트들 :::\n"
                                 + (data.ports ?? [])
                                     .join("\n")
+                                + "\n\n"
+                            :
+                                ""
+                        )
+                        + (
+                            openExplorerPerm ?
+                                "추가 권한 :::\n"
+                                + "파일 탐색기 열기 권한"
                                 + ""
                             :
                                 ""
@@ -141,15 +151,20 @@ export function ioStart() {
                         docker: dockerMode,
                         directories: data.directories ?? {},
                         dependencies: data.dependencies ?? {},
-                        ports: data.ports ?? []
+                        ports: data.ports ?? [],
+                        openExplorerPerm: openExplorerPerm
                     };
                     pushSetting(setting);
                 }
 
+                const dockerMode = !!data.docker;
+                const openExplorerPerm = !!data.openExplorerPerm;
 
-                const dockerModePermissions = {
+
+                const dockerModePermissions : Permissions = {
                     ports: data.ports,
-                    directories: data.directories
+                    directories: data.directories,
+                    openExplorerPerm: openExplorerPerm
                 };
 
                 // 도커모드인데 도커가 없다면, not found!
@@ -201,7 +216,9 @@ export function ioStart() {
                                 [...Object.keys(data.dependencies ?? {}),
                                     "/",
                                     `__workspace:${path.resolve(workspacePath)}`,
-                                    ...Object.entries(data.directories).map(([name, path]) => `${name}:${path}`)
+                                    ...Object.entries(data.directories).map(([name, path]) => `${name}:${path}`),
+                                    "/",
+                                    openExplorerPerm ? "1" : "0"
                                 ],
                             { silent: true })
                     )
@@ -217,11 +234,34 @@ export function ioStart() {
                     }, 1000 * 60 * 60);
                 }
 
+
+                // 사용 가능한 디렉토리 실제 주소들
+                const okPaths = [path.resolve(workspacePath), ...Object.values(data.directories ?? {}).map(v => path.resolve(v))];
+
+
                 // 프로세스와 소통 설정
                 server.process.on('message', (message: any) => {
-                    socket.emit('spawn_message', {
-                        message: message,
-                    });
+                    if(message.type === 'message') { // 메시지
+                        socket.emit('spawn_message', {
+                            message: message.message,
+                        });
+                    } else if(message.type === 'openExplorer') { // 탐색기 열기
+                        if(openExplorerPerm) {
+                            if(okPaths.some(v => !path.relative(v, message.path).includes('..'))) {
+                                openExplorer(message.path, err => {});
+                            } else {
+                                server.process.send({
+                                    type: 'error',
+                                    error: `You do not have permission to open explorer in ${message.path}`
+                                });
+                            }
+                        } else {
+                            server.process.send({
+                                type: 'error',
+                                error: 'You do not have permission to open explorer'
+                            });
+                        }
+                    }
                 });
 
                 // 프로세스 종료시
