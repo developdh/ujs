@@ -20,7 +20,8 @@ const createWindow = (): void => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-    }
+    },
+    icon: "./assets/icons/png/1024x1024.png"
   });
 
   // and load the index.html of the app.
