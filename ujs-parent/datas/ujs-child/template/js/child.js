@@ -31,7 +31,7 @@ function messageReceived(message) {
 
 const depedenciesI = process.argv.indexOf("/");
 const dependencies = process.argv.slice(2, depedenciesI);
-const realDirectoriesI = process.argv.indexOf("/", dependenciesI + 1);
+const realDirectoriesI = process.argv.indexOf("/", depedenciesI + 1);
 const realDirectories = {
     ...Object.fromEntries(process.argv.slice(depedenciesI + 1, realDirectoriesI).map(v => v.split(":")))
 };

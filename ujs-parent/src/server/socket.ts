@@ -77,9 +77,12 @@ export function ioStart() {
                 const workspacePath = childDir + '/workspace';
 
                 const setting = await findSetting(token.origin);
-                
-                
-                if(setting) { // 이미 설정(권한)이 있다.
+                console.log(setting);
+                if(setting
+                    && JSON.stringify(setting.directories) === JSON.stringify(data.directories ?? {})
+                    && JSON.stringify(setting.dependencies) === JSON.stringify(data.dependencies ?? {})
+                    && setting.docker === !!data.docker
+                    ) { // 이미 설정(권한)이 있다.
                     options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
                     options.detail = ``;
     
@@ -142,9 +145,9 @@ export function ioStart() {
                         socket.emit('spawn_start', { status: 403, err:'denined' });
                         return;
                     }
-    
+                    console.log(1);
                     // 권한 허용됨 리스트에 추가
-                    const setting : (Info & {id:number}) = {
+                    const newSetting : (Info & {id:number}) = {
                         id: 1,
                         name: token.origin,
                         url: token.origin,
@@ -154,7 +157,8 @@ export function ioStart() {
                         ports: data.ports ?? [],
                         openExplorerPerm: openExplorerPerm
                     };
-                    pushSetting(setting);
+                    pushSetting(newSetting);
+                    console.log(2);
                 }
 
                 const dockerMode = !!data.docker;
@@ -172,7 +176,7 @@ export function ioStart() {
                     socket.emit('spawn_start', { status: 400, err:'not found' });
                     return;
                 }
-
+                
                 // 도커 이미지가 빌드 된적 없다면, 빌드!
                 if(dockerMode && !(await isChildImageBuilt())){
                     await buildChildImage()
@@ -183,7 +187,7 @@ export function ioStart() {
                     socket.emit('spawn_start', { status: 500, err: 'current running' });
                     return;
                 }
-
+                
                 // 디렉토리 복사
                 try {
                     fs.statSync(childDir);
@@ -194,7 +198,7 @@ export function ioStart() {
                         fs.promises.mkdir(workspacePath, { recursive:true });
                     }
                 }
-
+                
                 // 모듈 다운로드
                 if(!dockerMode) {
                     for (let i in data.dependencies) {
@@ -205,7 +209,7 @@ export function ioStart() {
                         }
                     }
                 }
-
+                
                 // 서버 설정
                 const server: Server = {
                     process: (
@@ -216,17 +220,17 @@ export function ioStart() {
                                 [...Object.keys(data.dependencies ?? {}),
                                     "/",
                                     `__workspace:${path.resolve(workspacePath)}`,
-                                    ...Object.entries(data.directories).map(([name, path]) => `${name}:${path}`),
+                                    ...Object.entries(data.directories ?? {}).map(([name, path]) => `${name}:${path}`),
                                     "/",
                                     openExplorerPerm ? "1" : "0"
                                 ],
                             { silent: true })
                     )
                 };
-
+                
                 serverList[token.origin] = server;  // 서버 객체에 저장
                 socketList[socket.id] = token.origin;
-
+                
                 // 타임아웃 설정
                 if (data.alive === false) {
                     server.timeoutId = setTimeout(() => {
@@ -234,11 +238,11 @@ export function ioStart() {
                     }, 1000 * 60 * 60);
                 }
 
-
+                
                 // 사용 가능한 디렉토리 실제 주소들
                 const okPaths = [path.resolve(workspacePath), ...Object.values(data.directories ?? {}).map(v => path.resolve(v))];
 
-
+                
                 // 프로세스와 소통 설정
                 server.process.on('message', (message: any) => {
                     if(message.type === 'message') { // 메시지
@@ -263,7 +267,7 @@ export function ioStart() {
                         }
                     }
                 });
-
+                
                 // 프로세스 종료시
                 server.process.on('exit', (message: any) => {
                     if (server.timeoutId)
