@@ -6,6 +6,7 @@ import DependencyList, { Dependencies } from './Dependency/DependencyList';
 import { Info } from './SettingApp';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Checkbox from '@material-ui/core/Checkbox';
 
 function SettingInfo({ info, onRemove, onUpdate }: {
   info: Info,
@@ -15,20 +16,29 @@ function SettingInfo({ info, onRemove, onUpdate }: {
   const handleRemove = () => {
     onRemove(info.url);
   }
-  const { classes } = props;
   const style = {
     border: '1px solid black',
     padding: '8px',
     margin: '8px'
   };
-
+  
   const {
     name, url, docker
   } = info;
-
+  
   const [directories, setDirectories] = useState(info.directories);
   const [dependencies, setDependencies] = useState(info.dependencies);
   const [ports, setPorts] = useState(info.ports);
+  const [exps, setExps] = useState(info.openExplorerPerm);
+  
+  const handleExps = (e) => {
+    if (exps == true) {
+      setExps(false);
+    }
+    else {
+      setExps(true);
+    }
+  }
 
   const styleA = {
     color: 'white',
@@ -58,6 +68,14 @@ function SettingInfo({ info, onRemove, onUpdate }: {
         {!docker ? <Dependency dependencies={dependencies} onUpdate={setDependencies} /> : undefined}
         {docker ? <h3>Port</h3> : undefined}
         {docker ? <Port ports={ports} onUpdate={setPorts} />: undefined}
+        <h3>openExplorerPerm 
+          <Checkbox
+            checked={exps}
+            onClick={handleExps}
+            inputProps={{ 'aria-label': 'primary checkbox' }}
+            name="openExplorerPerm"
+          />
+        </h3>
       </div>
     </div>
   );

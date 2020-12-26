@@ -12,7 +12,8 @@ class SettingForm extends Component {
     dependencies: {},
     ports: [],
     directories: {},
-    docker: true
+    docker: true,
+    openExplorerPerm: false
   }
   count = 0;
 

@@ -14,7 +14,8 @@ interface State {
 export interface Info {
   name: string,
   url: string,
-  docker: boolean
+  docker: boolean,
+  openExplorerPerm: boolean,
   directories: {
     [name: string]: string
   },
