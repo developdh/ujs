@@ -73,6 +73,7 @@ class SettingForm extends Component {
           onChange={this.handleChange}
           name="name"
           InputProps={{inputProps:{style:{color:'white'}}}}
+          InputLabelProps={{style: { color: '#fff' }}}        
         />
         <TextField
           label="URL"
@@ -80,11 +81,12 @@ class SettingForm extends Component {
           onChange={this.handleChange}
           name="url"
           InputProps={{inputProps:{style:{color:'white'}}}}
+          InputLabelProps={{style: { color: '#fff' }}}        
         />
         <Checkbox
           checked={this.state.docker}
           onChange={this.handleDocker}
-          inputProps={{ 'aria-label': 'primary checkbox' }}
+          inputProps={{ 'aria-label': 'primary checkbox' }}  
           name="docker"
         />
         <Button
@@ -96,7 +98,7 @@ class SettingForm extends Component {
           startIcon={<AddBoxIcon />}
         >
           Enroll
-        </Button>
+        </  Button>
       </form>
     );
   }
