@@ -317,3 +317,10 @@ export function ioStart() {
 }
 
 
+export async function killAll() {
+    for(const server of Object.values(serverList)) {
+        if(server.process instanceof DockerProcess) {
+            server.process.kill();
+        }
+    }
+}

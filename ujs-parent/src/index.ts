@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 import { serverStart } from "./server/server";
+import { killAll } from "./server/socket";
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -43,6 +44,10 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("quit", async () => {
+  await killAll();
 });
 
 app.on("activate", () => {

@@ -45,28 +45,7 @@ class DockerProcess extends EventEmitter {
 
     async start() {
         this.port = await getPort();
-        console.log("야야야", `docker run -d -p ${this.port}:65432 ${
-            this.permissions.ports.map(port => 
-                `-p ${port}:${port}`
-            ).join(" ")
-        } ${
-          `-v "${this.workspacePath}":/src/src/app/workspace`  
-        } ${
-            Object.entries(this.permissions.directories).map(([name, path]) => 
-                `-v "${path}":"/src/src/app/dirs/${name}"`
-            ).join(" ")
-        } -v "${path.resolve(this.workspacePath, "../node_modules")}":/src/src/app/node_modules ${childImageName} /bin/bash -c "npm i ${
-            Object.entries(this.dependencies).map(([name, version]) => 
-                `${name}@${version ?? "*"}`
-            ).join(" ")
-        } && node index ${
-            Object.keys(this.dependencies).join(" ")
-        } / ${
-          this.permissions.ports.join(" ")  
-        } / \\"__workspace:${this.workspacePath.split("\\").join("\\\\")}\\" ${
-            Object.entries(this.permissions.directories).map(([name, path]) => `\\"${name}:${path.split("\\").join("\\\\")}\\"`).join(" ")
-        }"`);
-
+        
         // 모듈 설치 / 실행 / 컨테이너 id 얻기
         const runResult = (
             await promisify(exec)(`docker run -d -p ${this.port}:65432 ${
@@ -117,10 +96,14 @@ class DockerProcess extends EventEmitter {
         return this;
     }
     async stop(){
-        await promisify(exec)(`docker container stop ${this.containerId} && docker container rm ${this.containerId}`);
+        try {
+            await promisify(exec)(`docker container stop ${this.containerId} && docker container rm ${this.containerId}`);
+        } catch {}
     }
     async kill() {
-        await promisify(exec)(`docker container kill ${this.containerId} && docker container rm ${this.containerId}`);
+        try {
+            await promisify(exec)(`docker container rm -f ${this.containerId}`);
+        } catch {}
     }
     message(message : any) {
         this.socket.emit("message", message);
@@ -139,7 +122,7 @@ class DockerProcess extends EventEmitter {
         this.emit("error", error);
     }
     exit(code : any) {
-        this.stop();
+        this.kill();
         this.exitCode = code;
         this.emit("exit", code);
     }
