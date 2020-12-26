@@ -4,7 +4,8 @@ interface Permissions {
     directories: {
         [name: string]: string
     },
-    ports: number[]
+    ports: number[],
+    openExplorerPerm: boolean
 }
 
 export default Permissions;

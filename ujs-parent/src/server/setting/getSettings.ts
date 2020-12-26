@@ -11,7 +11,8 @@ export interface Info {
     dependencies: {
       [name: string]: string
     },
-    ports: number[]
+    ports: number[],
+    openExplorerPerm: boolean
 }
 
 export const DATA_PATH = "./datas/src/server/data.json";

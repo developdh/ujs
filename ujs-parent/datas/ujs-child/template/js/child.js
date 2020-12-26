@@ -16,7 +16,10 @@ function offMessage(handler) {
 }
 
 function sendMessage(message) {
-    process.send(message);
+    process.send({
+        type:"mesesage",
+        message:message
+    });
 }
 
 function messageReceived(message) {
@@ -26,13 +29,16 @@ function messageReceived(message) {
 }
 
 
-const dependencies = process.argv.slice(2, process.argv.indexOf("/"));
+const depedenciesI = process.argv.indexOf("/");
+const dependencies = process.argv.slice(2, depedenciesI);
+const realDirectoriesI = process.argv.indexOf("/", dependenciesI + 1);
 const realDirectories = {
-    ...Object.fromEntries(process.argv.slice(process.argv.indexOf("/") + 1).map(v => v.split(":")))
+    ...Object.fromEntries(process.argv.slice(depedenciesI + 1, realDirectoriesI).map(v => v.split(":")))
 };
 const directories = realDirectories;
 const rDirs = realDirectories;
 const dirs = directories;
+const openExplorerPerm = process.argv.slice(realDirectoriesI + 1)[0] === "1" ? true : false;
 
 
 function _require(moduleName) {
@@ -81,6 +87,14 @@ const _fs = {
 };
 
 
+function openExplorer(path) {
+    process.send({
+        type: "openExplorer",
+        path: path
+    });
+}
+
+
 process.on("message", message => {
     if (message.type === "exec") {
         evalSafe(message.command, {
@@ -95,9 +109,13 @@ process.on("message", message => {
             realDirectories,
             directories,
             rDirs,
-            dirs
+            dirs,
+            openExplorer,
+            openExplorerPerm
         });
     } else if (message.type === "message") {
         messageReceived(message.data);
+    } else if (message.type === "error") {
+        throw message.error;
     }
 });

@@ -35,7 +35,8 @@ const dependencies = process.argv.slice(2, dependenciesI);
 const portsI = process.argv.indexOf("/", dependenciesI + 1);
 const ports = process.argv.slice(dependenciesI + 1, portsI).map(v => parseInt(v));
 
-const realDirectories = Object.fromEntries(process.argv.slice(portsI + 1).map(v => {
+const realDirectoriesI = process.argv.indexOf("/", portsI + 1);
+const realDirectories = Object.fromEntries(process.argv.slice(portsI + 1, realDirectoriesI).map(v => {
     const splitted = v.split(":");
     return [splitted[0], splitted.slice(1).join(":")];
 }));
@@ -48,6 +49,12 @@ const directories = Object.fromEntries(Object.keys(realDirectories).map(name =>
 );
 const rDirs = realDirectories;
 const dirs = directories;
+const openExplorerPerm = process.argv.slice(realDirectoriesI + 1)[0] === "1" ? true : false;
+
+
+function openExplorer(path) {
+    socket.emit("openExplorer", path);
+}
 
 
 const io = new Server();
@@ -61,6 +68,9 @@ io.on("connect", _socket => {
     });
     socket.on("message", message => {
         messageReceived(message);
+    });
+    socket.on("error", error => {
+        throw error;
     });
 });
 
