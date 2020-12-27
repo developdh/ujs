@@ -84,7 +84,9 @@ export function ioStart() {
                 if(setting
                     && JSON.stringify(setting.directories) === JSON.stringify(data.directories ?? {})
                     && JSON.stringify(setting.dependencies) === JSON.stringify(data.dependencies ?? {})
+                    && JSON.stringify(setting.ports) === JSON.stringify(data.ports ?? [])
                     && setting.docker === !!data.docker
+                    && setting.openExplorerPerm === !!data.openExplorerPerm
                     ) { // 이미 설정(권한)이 있다.
                     options.message = `${token.origin} 에서 당신의 시스템에서 ujs코드를 실행하려고 합니다. 실행하겠습니까?`;
                     options.detail = ``;
