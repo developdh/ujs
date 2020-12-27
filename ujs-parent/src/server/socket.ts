@@ -20,6 +20,7 @@ import openExplorer from "open-file-explorer";
 const exec = util.promisify(normalExec);
 const ncp = util.promisify(_ncp);
 const readFile = util.promisify(fs.readFile);
+const sleep = util.promisify(setTimeout);
 // const ipc_on = util.promisify(ipcMain.on);
 const ipc_once = (key) => {
     return new Promise((resolve, reject) => {
@@ -28,6 +29,8 @@ const ipc_once = (key) => {
         });
     });
 }
+
+ 
 
 interface JwtType {
     origin: string,
@@ -77,7 +80,7 @@ export function ioStart() {
                 const workspacePath = childDir + '/workspace';
 
                 const setting = await findSetting(token.origin);
-                console.log(setting);
+
                 if(setting
                     && JSON.stringify(setting.directories) === JSON.stringify(data.directories ?? {})
                     && JSON.stringify(setting.dependencies) === JSON.stringify(data.dependencies ?? {})
@@ -93,9 +96,9 @@ export function ioStart() {
                         return;
                     }
                     // 덮어씌운다.
-                    Object.assign(data, setting); 
+                    Object.assign(data, setting);
 
-                } else { // 설정(권한) 이제 받아야 한다.
+                } else { // 설정(권한) 이제 받아야 한다. | 새 권한을 요청한다
                     const dockerMode = !!data.docker;
                     const openExplorerPerm = !!data.openExplorerPerm;
 
@@ -145,7 +148,7 @@ export function ioStart() {
                         socket.emit('spawn_start', { status: 403, err:'denined' });
                         return;
                     }
-                    console.log(1);
+                    
                     // 권한 허용됨 리스트에 추가
                     const newSetting : (Info & {id:number}) = {
                         id: 1,
@@ -158,8 +161,11 @@ export function ioStart() {
                         openExplorerPerm: openExplorerPerm
                     };
                     pushSetting(newSetting);
-                    console.log(2);
+                    
                 }
+
+                // 팝업이 뜬 사이에 연결이 끊어졌다면 종료
+                if(!socket.connected)return;
 
                 const dockerMode = !!data.docker;
                 const openExplorerPerm = !!data.openExplorerPerm;

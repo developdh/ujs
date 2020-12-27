@@ -13,7 +13,6 @@ async function pushSetting(info : Info) {
     }else{
         infos.push(info);
     }
-    console.log(infos);
     setSettings(infos);
 }
 
